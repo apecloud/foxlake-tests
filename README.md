@@ -10,7 +10,7 @@ You can either run the tests by the Go program on the source project or by the t
 ## Prepare the data for testing
 The data files used by the test cases lay in directory `tests/cicd`. Please copy them all to your bucket in cloud storage like S3 or local storage like MinIO. Do not try to modify the directory structure of the data files. Because the test cases are based on the directory structure.
 
-Moreover, if you want to test correctness of the TPC-H queries. Please generate the TPC-H data files by yourself. The instructions of generating TPC-H data files is showed [here](foxlake-tpch-sf1-test/README.md). After generating the data files, you can run the test cases in tests/foxlake-tpch-sf1-test/tpch/ directory. It's worth noting that the test results in the cases are based on TPC-H SF1.
+Moreover, if you want to test correctness of the TPC-H queries. Please generate the TPC-H data files by yourself. The instructions of generating TPC-H data files is showed [here](foxlake-tpch-test/README.md). After generating the data files, you can run the test cases in tests/foxlake-tpch-sf1-test/tpch/ directory. It's worth noting that the test results in the cases are based on TPC-H SF1.
 
 
 ## Running Golang program directly
