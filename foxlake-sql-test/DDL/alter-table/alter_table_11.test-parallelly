@@ -1,0 +1,136 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_11;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_11;
+
+statement ok
+USE test_ddls_alter_table_11;
+
+
+########################## ============== partition_options ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tt;
+
+statement ok
+DROP TABLE IF EXISTS ttt;
+
+statement ok
+CREATE TABLE t (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY HASH(id);
+
+statement ok
+CREATE TABLE tt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN (200));
+
+statement ok
+CREATE TABLE ttt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id) SUBPARTITIONS 2 (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN (200));
+
+
+# ====================== Truncate/Coalesce/Reorganize Partition ====================
+
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p13 VALUES LESS THAN (1300 * 3));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p14 VALUES LESS THAN (1400 * 3));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p15 VALUES LESS THAN (1500 * 3));
+
+statement ok
+ALTER TABLE tt TRUNCATE PARTITION p13;
+
+statement ok
+ALTER TABLE tt TRUNCATE PARTITION p14, p15;
+
+statement ok
+ALTER TABLE tt TRUNCATE PARTITION ALL;
+
+
+statement ok
+ALTER TABLE t COALESCE PARTITION 1;
+
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION rp1);
+
+statement ok
+ALTER TABLE t REORGANIZE PARTITION rp1 INTO (PARTITION rp2);
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t1;
+
+statement ok
+DROP TABLE IF EXISTS t2;
+
+statement ok
+CREATE TABLE t1 (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY HASH(id) (PARTITION p0);
+
+statement ok
+CREATE TABLE t2 (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100));
+
+
+# ====================== Exchange/Analyze/Check/Rebuild/Repair/Remove Partition ====================
+
+
+statement ok
+ALTER TABLE t1 EXCHANGE PARTITION p0 WITH TABLE t2;
+
+
+statement ok
+ALTER TABLE t ANALYZE PARTITION p0;
+
+statement ok
+ALTER TABLE t ANALYZE PARTITION p0, p1;
+
+statement ok
+ALTER TABLE t ANALYZE PARTITION ALL;
+
+
+statement ok
+ALTER TABLE t CHECK PARTITION p0;
+
+statement ok
+ALTER TABLE t CHECK PARTITION p0, p1;
+
+statement ok
+ALTER TABLE t CHECK PARTITION ALL;
+
+
+statement ok
+ALTER TABLE t REBUILD PARTITION p0;
+
+statement ok
+ALTER TABLE t REBUILD PARTITION p0, p1;
+
+statement ok
+ALTER TABLE t REBUILD PARTITION ALL;
+
+
+statement ok
+ALTER TABLE t REPAIR PARTITION p0;
+
+statement ok
+ALTER TABLE t REPAIR PARTITION p0, p1;
+
+statement ok
+ALTER TABLE t REPAIR PARTITION ALL;
+
+
+statement ok
+ALTER TABLE t REMOVE PARTITIONING;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_11;

@@ -1,0 +1,148 @@
+statement ok
+DROP DATABASE IF EXISTS null_values;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS null_values;
+
+statement ok
+USE null_values;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE t (
+	i int NOT NULL,
+	b BOOLEAN NOT NULL,
+	ii int NULL,
+	bb BOOLEAN NULL,
+	i_n int NULL,
+	b_n BOOLEAN NULL
+);
+
+statement ok
+INSERT INTO t VALUES
+	(1, true, null, false, null, null),
+	(2, false, 1, null, null, null),
+	(3, true, null, null, null, null),
+	(4, false, 2, true, null, null);
+
+# Logical operations
+query IIIIIIIII rowsort
+SELECT i, b AND bb, bb AND b, bb OR b, b OR bb, b XOR bb, bb XOR b, NOT b, NOT bb FROM t;
+----
+1	0	0	1	1	1	1	0	1
+2	0	0	NULL	NULL	NULL	NULL	1	NULL
+3	NULL	NULL	1	1	NULL	NULL	0	NULL
+4	0	0	1	1	1	1	1	0
+
+query IIIIIIIII rowsort
+SELECT i, b AND b_n, b_n AND b, b_n OR b, b OR b_n, b XOR b_n, b_n XOR b, NOT b, NOT b_n FROM t;
+----
+1	NULL	NULL	1	1	NULL	NULL	0	NULL
+2	0	0	NULL	NULL	NULL	NULL	1	NULL
+3	NULL	NULL	1	1	NULL	NULL	0	NULL
+4	0	0	NULL	NULL	NULL	NULL	1	NULL
+
+# Boolean tests
+query IIIIIII rowsort
+SELECT i, bb IS TRUE, bb IS NOT TRUE, bb IS FALSE, bb IS NOT FALSE, bb IS UNKNOWN, bb IS NOT UNKNOWN FROM t;
+----
+1	0	1	1	0	0	1
+2	0	1	0	1	1	0
+3	0	1	0	1	1	0
+4	1	0	0	1	0	1
+
+query IIIIIII rowsort
+SELECT i, b_n IS TRUE, b_n IS NOT TRUE, b_n IS FALSE, b_n IS NOT FALSE, b_n IS UNKNOWN, b_n IS NOT UNKNOWN FROM t;
+----
+1	0	1	0	1	1	0
+2	0	1	0	1	1	0
+3	0	1	0	1	1	0
+4	0	1	0	1	1	0
+
+# basic arithmetic operations
+query IIIII rowsort
+SELECT i, ii + 1, ii - 1, ii * 2, ii % 2 FROM t;
+----
+1	NULL	NULL	NULL	NULL
+2	2	0	2	1
+3	NULL	NULL	NULL	NULL
+4	3	1	4	0
+
+query IIIII rowsort
+SELECT i, i + ii, i - ii, i * ii, i % ii FROM t;
+----
+1	NULL	NULL	NULL	NULL
+2	3	1	2	0
+3	NULL	NULL	NULL	NULL
+4	6	2	8	0
+
+query IIIIRI rowsort
+SELECT i, ii + i_n, ii - i_n, ii * i_n, ii / i_n, ii % i_n FROM t;
+----
+1	NULL	NULL	NULL	NULL	NULL
+2	NULL	NULL	NULL	NULL	NULL
+3	NULL	NULL	NULL	NULL	NULL
+4	NULL	NULL	NULL	NULL	NULL
+
+# COALESCE and CASE
+query III rowsort
+SELECT i, COALESCE(ii, i_n, 0) as coalesce_result,
+       CASE WHEN ii IS NULL THEN i ELSE ii END as case_result
+FROM t;
+----
+1	0	1
+2	1	1
+3	0	3
+4	2	2
+
+# IS NULL and IS NOT NULL with WHERE clause
+query I rowsort
+SELECT i FROM t WHERE ii IS NULL;
+----
+1
+3
+
+query I rowsort
+SELECT i FROM t WHERE ii IS NOT NULL;
+----
+2
+4
+
+# NULL with string concatenation
+query IT rowsort
+SELECT i, CONCAT('Value: ', ii) FROM t;
+----
+1	NULL
+2	Value: 1
+3	NULL
+4	Value: 2
+
+# NULLIF function
+query II rowsort
+SELECT i, NULLIF(ii, 1) FROM t;
+----
+1	NULL
+2	NULL
+3	NULL
+4	2
+
+query II rowsort
+SELECT i, NULLIF(2, ii) FROM t;
+----
+1	2
+2	2
+3	2
+4	NULL
+
+# aggregation functions
+# TODO(fan): Fix COUNT(ii) - it should return 2, not 4
+# TODO(fan): Fix SUM(ii) - it causes a block encoding bug in the CI environment
+query II rowsort
+SELECT MAX(ii), MIN(ii) FROM t;
+----
+2	1
+
+statement ok
+DROP DATABASE IF EXISTS null_values;

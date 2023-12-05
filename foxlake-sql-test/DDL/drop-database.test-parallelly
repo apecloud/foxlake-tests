@@ -1,0 +1,63 @@
+statement ok
+CREATE DATABASE IF NOT EXISTS abc_drop_database;
+
+statement ok
+DROP DATABASE abc_drop_database;
+
+
+statement ok
+CREATE DATABASE IF NOT EXISTS abc_drop_database;
+
+statement ok
+DROP SCHEMA abc_drop_database;
+
+
+statement ok
+CREATE DATABASE IF NOT EXISTS abc_drop_database;
+
+statement ok
+DROP DATABASE IF EXISTS abc_drop_database;
+
+statement ok
+CREATE OR REPLACE STORAGE test_drop_db_1
+AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}/test_drop_db_1/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+
+statement ok
+CREATE OR REPLACE STORAGE test_drop_db_2
+AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}/test_drop_db_2/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+
+statement ok
+CREATE DATABASE test_drop_db;
+
+statement ok
+use test_drop_db;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_test_drop_db_1 (id INT, msg VARCHAR(100)) ENGINE = 'columnar@test_drop_db_1';
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_test_drop_db_2 (id INT, msg VARCHAR(100)) ENGINE = 'columnar@test_drop_db_2';
+
+statement ok
+INSERT INTO t_test_drop_db_1(id, msg) VALUES (1, 'hello');
+
+statement ok
+INSERT INTO t_test_drop_db_2(id, msg) VALUES (1, 'hello');
+
+statement ok
+drop database test_drop_db;
+
+statement ok
+use information_schema;
+
+query TT nosort
+list storage test_drop_db_1 where FILENAME = 'test_drop_db';
+----
+
+query TT nosort
+list storage test_drop_db_2 where FILENAME = 'test_drop_db';
+----

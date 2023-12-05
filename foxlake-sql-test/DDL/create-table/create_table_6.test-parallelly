@@ -1,0 +1,358 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_6;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_6;
+
+statement ok
+USE test_ddls_create_table_6;
+
+
+########################## ============== key_part ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id ASC));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key ((i + 5)));
+
+
+
+########################## ============== index_type ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key USING HASH (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key USING BTREE (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, primary key USING HASH (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, primary key USING BTREE (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, unique key USING HASH (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, unique key USING BTREE (id));
+
+
+
+########################## ============== index_option ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id) KEY_BLOCK_SIZE = 1);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id) USING BTREE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id) USING HASH);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, fulltext (s) WITH PARSER ngram);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id) COMMENT 'This is a key');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id) VISIBLE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id) INVISIBLE);
+
+
+
+########################## ============== check_constraint_definition ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, constraint check (id < 5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, constraint abc check (id < 5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, constraint abc check (id < 5) ENFORCED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, constraint abc check (id < 5) NOT ENFORCED);
+
+
+
+########################## ============== reference_definition ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, tt_i int, key (tt_id, tt_i));
+
+statement ok
+create table t (id bigint references tt (tt_id, tt_i));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) MATCH FULL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) MATCH PARTIAL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) MATCH SIMPLE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON DELETE RESTRICT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON DELETE CASCADE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON DELETE SET NULL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON DELETE NO ACTION);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON DELETE SET DEFAULT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON UPDATE RESTRICT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON UPDATE CASCADE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON UPDATE SET NULL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON UPDATE NO ACTION);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint references tt (tt_id) ON UPDATE SET DEFAULT);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_6;

@@ -1,0 +1,213 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_2;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_2;
+
+statement ok
+USE test_ddls_create_table_2;
+
+
+########################## ============== data_type ============== ##########################
+
+
+# ================= Numeric ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BIT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BIT(64));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYINT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYINT(1));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYINT UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYINT ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BOOL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BOOLEAN);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SMALLINT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SMALLINT(1));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SMALLINT UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SMALLINT ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMINT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMINT(1));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMINT UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMINT ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INT(1));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INT UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INT ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INTEGER);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INTEGER(1));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INTEGER UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c INTEGER ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BIGINT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BIGINT(1));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BIGINT UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BIGINT ZEROFILL);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_2;

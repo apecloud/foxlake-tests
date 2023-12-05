@@ -1,0 +1,47 @@
+statement ok
+DROP DATABASE IF EXISTS file_pruning;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS file_pruning;
+
+statement ok
+USE file_pruning;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE t (
+	bool     char(0) default NULL,
+	not_null varchar(20) binary NOT NULL default '',
+	misc     integer not null,
+	primary key (not_null)
+);
+
+statement ok
+INSERT INTO t VALUES (NULL,'a',4), (NULL,'b',5), (NULL,'c',6), (NULL,'d',7);
+
+query TTI rowsort
+SELECT * FROM t;
+----
+NULL	a	4
+NULL	b	5
+NULL	c	6
+NULL	d	7
+
+query TTI rowsort
+SELECT * FROM t WHERE misc > 5 AND bool is null;
+----
+NULL	c	6
+NULL	d	7
+
+statement ok
+DELETE FROM t WHERE misc > 5 AND bool is null;
+
+query TTI rowsort
+SELECT * FROM t WHERE misc > 4 AND bool is null;
+----
+NULL	b	5
+
+statement ok
+DROP DATABASE IF EXISTS file_pruning;

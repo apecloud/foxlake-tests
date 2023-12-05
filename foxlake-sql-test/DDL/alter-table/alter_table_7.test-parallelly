@@ -1,0 +1,86 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_7;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_7;
+
+statement ok
+USE test_ddls_alter_table_7;
+
+
+########################## ============== alter_option ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tt;
+
+statement ok
+CREATE TABLE t (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100));
+
+statement ok
+CREATE TABLE tt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100), KEY (i), KEY (id, i));
+
+
+# ====================== Change Column ====================
+
+
+statement ok
+ALTER TABLE t ADD ii INT;
+
+statement ok
+ALTER TABLE t CHANGE ii ii1 INT;
+
+statement ok
+ALTER TABLE t CHANGE COLUMN ii1 ii1 INT;
+
+statement ok
+ALTER TABLE t CHANGE ii1 ii1 BIGINT;
+
+statement ok
+ALTER TABLE t CHANGE ii1 ii1 INT FIRST;
+
+statement ok
+ALTER TABLE t CHANGE ii1 ii1 INT AFTER id;
+
+
+# ====================== Change Table Attributes ====================
+
+
+statement ok
+ALTER TABLE t CHARACTER SET = utf8;
+
+statement ok
+ALTER TABLE t DEFAULT CHARACTER SET = utf8;
+
+statement ok
+ALTER TABLE t CHARACTER SET = utf8 COLLATE = utf8_bin;
+
+
+statement ok
+ALTER TABLE t CONVERT TO CHARACTER SET utf8;
+
+statement ok
+ALTER TABLE t CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+
+
+statement ok
+ALTER TABLE t DISABLE KEYS;
+
+statement ok
+ALTER TABLE t ENABLE KEYS;
+
+
+statement ok
+ALTER TABLE t DISCARD TABLESPACE;
+
+statement ok
+ALTER TABLE t IMPORT TABLESPACE;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_7;

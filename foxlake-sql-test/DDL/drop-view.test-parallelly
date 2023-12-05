@@ -1,0 +1,78 @@
+statement ok
+DROP DATABASE IF EXISTS drop_view;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS drop_view;
+
+statement ok
+USE drop_view;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_drop_view;
+
+statement ok
+CREATE DATABASE test_ddls_drop_view;
+
+statement ok
+USE test_ddls_drop_view;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE IF NOT EXISTS drop_view.t (id BIGINT, s VARCHAR(100), i INT);
+
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+statement ok
+DROP VIEW v;
+
+
+statement ok
+CREATE OR REPLACE VIEW drop_view.v AS select * from drop_view.t;
+
+statement ok
+DROP VIEW drop_view.v;
+
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+
+statement ok
+CREATE OR REPLACE VIEW v1 AS select * from t;
+
+statement ok
+CREATE OR REPLACE VIEW v2 AS select * from t;
+
+statement ok
+DROP VIEW v1, v2;
+
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+statement ok
+DROP VIEW v RESTRICT;
+
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+statement ok
+DROP VIEW v CASCADE;
+
+statement ok
+DROP DATABASE IF EXISTS drop_view;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_drop_view;

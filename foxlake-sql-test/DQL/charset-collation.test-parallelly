@@ -1,0 +1,50 @@
+statement ok
+DROP DATABASE IF EXISTS charset_collation;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS charset_collation;
+
+statement ok
+USE charset_collation;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (a varchar(255));
+
+statement ok
+insert into t values ('workflow');
+
+query T nosort
+select * from t where a = 'Workflow';
+----
+workflow
+
+query T nosort
+select * from t where a > 'u';
+----
+workflow
+
+query I nosort
+select count(*) from t where a > 'x';
+----
+0
+
+# TODO(fan): enable these test
+# query I nosort
+# select 'A' = 'a';
+# ----
+# 1
+#
+# select 'A' COLLATE utf8mb4_bin = 'a' COLLATE utf8mb4_bin;
+# ----
+# 0
+
+query I nosort
+select _binary'A' = 'a';
+----
+0
+
+statement ok
+DROP DATABASE IF EXISTS charset_collation;

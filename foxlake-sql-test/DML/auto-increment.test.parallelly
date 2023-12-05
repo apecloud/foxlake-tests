@@ -1,0 +1,152 @@
+statement ok
+DROP DATABASE IF EXISTS test_auto_increment;
+
+statement ok
+CREATE DATABASE test_auto_increment;
+
+statement ok
+USE test_auto_increment;
+
+# Testing AUTO_INCREMENT for append-only table.
+statement ok
+CREATE TABLE t_ai_ao (id BIGINT PRIMARY KEY AUTO_INCREMENT, i int) APPEND_ONLY = TRUE AUTO_INCREMENT = 256;
+
+statement ok
+INSERT INTO t_ai_ao (i) VALUES (1);
+
+statement ok
+INSERT INTO t_ai_ao (i) VALUES (2), (3);
+
+statement ok
+INSERT INTO t_ai_ao (i) VALUES (4), (5), (6);
+
+statement ok
+INSERT INTO t_ai_ao (id, i) VALUES (11, 7);
+
+statement ok
+INSERT INTO t_ai_ao (i, id) VALUES (8, 12), (9, 13), (10, 14), (11, 15), (12, 16);
+
+query II nosort
+SELECT * FROM t_ai_ao ORDER BY id;
+----
+11	7
+12	8
+13	9
+14	10
+15	11
+16	12
+256	1
+257	2
+258	3
+259	4
+260	5
+261	6
+
+# Testing AUTO_INCREMENT for non append-only table.
+statement ok
+CREATE TABLE t_ai (id BIGINT PRIMARY KEY AUTO_INCREMENT, i int) AUTO_INCREMENT = 256;
+
+statement ok
+INSERT INTO t_ai (i) VALUES (1);
+
+statement ok
+INSERT INTO t_ai (i) VALUES (2), (3);
+
+statement ok
+INSERT INTO t_ai (i) VALUES (4), (5), (6);
+
+statement ok
+INSERT INTO t_ai (id, i) VALUES (11, 7);
+
+statement ok
+INSERT INTO t_ai (i, id) VALUES (8, 12), (9, 13), (10, 14), (11, 15), (12, 16);
+
+query II nosort
+SELECT * FROM t_ai ORDER BY id;
+----
+11	7
+12	8
+13	9
+14	10
+15	11
+16	12
+256	1
+257	2
+258	3
+259	4
+260	5
+261	6
+
+
+# Testing AUTO_INCREMENT for append-only table without specifying start point.
+statement ok
+CREATE TABLE t_ai_no_spec_ao (id BIGINT PRIMARY KEY AUTO_INCREMENT, i int) APPEND_ONLY = TRUE;
+
+statement ok
+INSERT INTO t_ai_no_spec_ao (i) VALUES (1);
+
+statement ok
+INSERT INTO t_ai_no_spec_ao (i) VALUES (2), (3);
+
+statement ok
+INSERT INTO t_ai_no_spec_ao (i) VALUES (4), (5), (6);
+
+statement ok
+INSERT INTO t_ai_no_spec_ao (id, i) VALUES (11, 7);
+
+statement ok
+INSERT INTO t_ai_no_spec_ao (i, id) VALUES (8, 12), (9, 13), (10, 14), (11, 15), (12, 16);
+
+query II nosort
+SELECT * FROM t_ai_no_spec_ao ORDER BY id;
+----
+1	1
+2	2
+3	3
+4	4
+5	5
+6	6
+11	7
+12	8
+13	9
+14	10
+15	11
+16	12
+
+# Testing AUTO_INCREMENT for non append-only table without specifying start point.
+statement ok
+CREATE TABLE t_ai_no_spec (id BIGINT PRIMARY KEY AUTO_INCREMENT, i int);
+
+statement ok
+INSERT INTO t_ai_no_spec (i) VALUES (1);
+
+statement ok
+INSERT INTO t_ai_no_spec (i) VALUES (2), (3);
+
+statement ok
+INSERT INTO t_ai_no_spec (i) VALUES (4), (5), (6);
+
+statement ok
+INSERT INTO t_ai_no_spec (id, i) VALUES (11, 7);
+
+statement ok
+INSERT INTO t_ai_no_spec (i, id) VALUES (8, 12), (9, 13), (10, 14), (11, 15), (12, 16);
+
+query II nosort
+SELECT * FROM t_ai_no_spec ORDER BY id;
+----
+1	1
+2	2
+3	3
+4	4
+5	5
+6	6
+11	7
+12	8
+13	9
+14	10
+15	11
+16	12
+
+statement ok
+DROP DATABASE IF EXISTS test_auto_increment;

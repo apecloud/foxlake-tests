@@ -1,0 +1,88 @@
+statement ok
+DROP DATABASE IF EXISTS rename_table;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS rename_table;
+
+statement ok
+USE rename_table;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_rename_table;
+
+statement ok
+CREATE DATABASE test_ddls_rename_table;
+
+statement ok
+USE test_ddls_rename_table;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT);
+
+
+query T rowsort
+SHOW TABLES;
+----
+t
+
+statement ok
+RENAME TABLE t to new_t;
+
+query T rowsort
+SHOW TABLES;
+----
+new_t
+
+
+statement ok
+DROP TABLE IF EXISTS t1;
+
+statement ok
+DROP TABLE IF EXISTS rename_table.t2;
+
+statement ok
+DROP TABLE IF EXISTS new_t1;
+
+statement ok
+DROP TABLE IF EXISTS rename_table.new_t2;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t1 (id BIGINT);
+
+statement ok
+CREATE TABLE IF NOT EXISTS rename_table.t2 (id BIGINT);
+
+
+query T rowsort
+SHOW TABLES;
+----
+new_t
+t1
+
+query T rowsort
+SHOW TABLES FROM rename_table;
+----
+t2
+
+statement ok
+RENAME TABLE t1 TO new_t1, rename_table.t2 TO rename_table.new_t2;
+
+query T rowsort
+SHOW TABLES;
+----
+new_t
+new_t1
+
+query T rowsort
+SHOW TABLES FROM rename_table;
+----
+new_t2
+
+statement ok
+DROP DATABASE IF EXISTS rename_table;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_rename_table;

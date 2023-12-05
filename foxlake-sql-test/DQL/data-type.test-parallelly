@@ -1,0 +1,1267 @@
+# Please put the directory 'cicd' to your bucket.
+# This directory can be found under the tests direcotory.
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_data_type;
+
+statement ok
+CREATE DATABASE test_ddls_data_type;
+
+statement ok
+USE test_ddls_data_type;
+
+statement ok
+DROP TABLE IF EXISTS t_data_type;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_data_type (
+  c_bit BIT,
+  c_bit_64 BIT(64),
+  c_bool BOOL,
+  c_boolean BOOLEAN,
+  c_tinyint TINYINT,
+  c_tinyint_1 TINYINT(1),
+  c_tinyint_unsigned TINYINT UNSIGNED,
+  c_tinyint_zerofill TINYINT ZEROFILL,
+  c_smallint SMALLINT,
+  c_smallint_1 SMALLINT(1),
+  c_smallint_unsigned SMALLINT UNSIGNED,
+  c_smallint_zerofill SMALLINT ZEROFILL,
+  c_mediumint MEDIUMINT,
+  c_mediumint_1 MEDIUMINT(1),
+  c_mediumint_unsigned MEDIUMINT UNSIGNED,
+  c_mediumint_zerofill MEDIUMINT ZEROFILL,
+  c_int INT,
+  c_int_1 INT(1),
+  c_int_unsigned INT UNSIGNED,
+  c_int_zerofill INT ZEROFILL,
+  c_integer INTEGER,
+  c_integer_1 INTEGER(1),
+  c_integer_unsigned INTEGER UNSIGNED,
+  c_integer_zerofill INTEGER ZEROFILL,
+  c_bigint BIGINT,
+  c_bigint_1 BIGINT(1),
+  c_bigint_unsigned BIGINT UNSIGNED,
+  c_bigint_zerofill BIGINT ZEROFILL,
+  c_decimal DECIMAL,
+  c_decimal_5 DECIMAL(5),
+  c_decimal_5_2 DECIMAL(5, 2),
+  c_decimal_unsigned DECIMAL UNSIGNED,
+  c_decimal_zerofill DECIMAL ZEROFILL,
+  c_dec DEC,
+  c_dec_5 DEC(5),
+  c_dec_5_2 DEC(5, 2),
+  c_dec_unsigned DEC UNSIGNED,
+  c_dec_zerofill DEC ZEROFILL,
+  c_numeric NUMERIC,
+  c_numeric_5 NUMERIC(5),
+  c_numeric_5_2 NUMERIC(5, 2),
+  c_numeric_unsigned NUMERIC UNSIGNED,
+  c_numeric_zerofill NUMERIC ZEROFILL,
+  c_fixed FIXED,
+  c_fixed_5 FIXED(5),
+  c_fixed_5_2 FIXED(5, 2),
+  c_fixed_unsigned FIXED UNSIGNED,
+  c_fixed_zerofill FIXED ZEROFILL,
+  c_float FLOAT,
+  c_float_5 FLOAT(5),
+  c_float_5_2 FLOAT(5, 2),
+  c_float_unsigned FLOAT UNSIGNED,
+  c_float_zerofill FLOAT ZEROFILL,
+  c_double DOUBLE,
+  c_double_5_2 DOUBLE(5, 2),
+  c_double_unsigned DOUBLE UNSIGNED,
+  c_double_zerofill DOUBLE ZEROFILL,
+  c_double_precision DOUBLE PRECISION,
+  c_double_precision_5_2 DOUBLE PRECISION(5, 2),
+  c_double_precision_unsigned DOUBLE PRECISION UNSIGNED,
+  c_double_precision_zerofill DOUBLE PRECISION ZEROFILL,
+  c_real REAL,
+  c_real_5_2 REAL(5, 2),
+  c_real_unsigned REAL UNSIGNED,
+  c_real_zerofill REAL ZEROFILL,
+  c_date DATE,
+  c_datetime DATETIME,
+  c_datetime_6 DATETIME(6),
+  c_timestamp TIMESTAMP,
+  c_timestamp_6 TIMESTAMP(6),
+  c_time TIME,
+  c_time_6 TIME(6),
+  c_year YEAR,
+  c_year_4 YEAR(4),
+  c_char CHAR,
+  c_national_char NATIONAL CHAR,
+  c_char_8 CHAR(8),
+  c_char_character_set_utf8 CHAR CHARACTER SET utf8,
+  c_char_collate_utf8_bin CHAR COLLATE utf8_bin,
+  c_national_varchar_8 NATIONAL VARCHAR(8),
+  c_varchar_8 VARCHAR(8),
+  c_varchar_8_character_set_utf8 VARCHAR(8) CHARACTER SET utf8,
+  c_varchar_8_collate_utf8_bin VARCHAR(8) COLLATE utf8_bin,
+  c_binary BINARY,
+  c_binary_8 BINARY(8),
+  c_varbinary_8 VARBINARY(8),
+  c_tinyblob TINYBLOB,
+  c_blob BLOB,
+  c_blob_8 BLOB(8),
+  c_mediumblob MEDIUMBLOB,
+  c_longblob LONGBLOB,
+  c_tinytext TINYTEXT,
+  c_tinytext_character_set_utf8 TINYTEXT CHARACTER SET utf8,
+  c_tinytext_collate_utf8_bin TINYTEXT COLLATE utf8_bin,
+  c_text TEXT,
+  c_text_8 TEXT(8),
+  c_text_character_set_utf8 TEXT CHARACTER SET utf8,
+  c_text_collate_utf8_bin TEXT COLLATE utf8_bin,
+  c_mediumtext MEDIUMTEXT,
+  c_mediumtext_character_set_utf8 MEDIUMTEXT CHARACTER SET utf8,
+  c_mediumtext_collate_utf8_bin MEDIUMTEXT COLLATE utf8_bin,
+  c_longtext LONGTEXT,
+  c_longtext_character_set_utf8 LONGTEXT CHARACTER SET utf8,
+  c_longtext_collate_utf8_bin LONGTEXT COLLATE utf8_bin,
+  c_enum ENUM('value1', 'value2'),
+  c_enum_character_set_utf8 ENUM('value1', 'value2') CHARACTER SET utf8,
+  c_enum_collate_utf8_bin ENUM('value1', 'value2') COLLATE utf8_bin,
+  c_set SET('value1', 'value2'),
+  c_set_character_set_utf8 SET('value1', 'value2') CHARACTER SET utf8,
+  c_set_collate_utf8_bin SET('value1', 'value2') COLLATE utf8_bin,
+  c_json JSON
+);
+
+
+# copy data from a file
+statement ok
+COPY INTO t_data_type
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-type/t_data_type.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER=',', OPTIONALLY_ENCLOSED='"');
+
+
+query T nosort
+SELECT c_bit FROM t_data_type;
+----
+
+
+query T nosort
+SELECT c_bit_64 FROM t_data_type;
+----
+UUUUUU@
+
+query I nosort
+SELECT c_bool FROM t_data_type;
+----
+0
+
+query I nosort
+SELECT c_boolean FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_tinyint FROM t_data_type;
+----
+-128
+
+query I nosort
+SELECT c_tinyint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_tinyint_unsigned FROM t_data_type;
+----
+255
+
+query I nosort
+SELECT c_tinyint_zerofill FROM t_data_type;
+----
+123
+
+query I nosort
+SELECT c_smallint FROM t_data_type;
+----
+-32768
+
+query I nosort
+SELECT c_smallint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_smallint_unsigned FROM t_data_type;
+----
+65535
+
+query I nosort
+SELECT c_smallint_zerofill FROM t_data_type;
+----
+12345
+
+query I nosort
+SELECT c_mediumint FROM t_data_type;
+----
+-8388608
+
+query I nosort
+SELECT c_mediumint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_mediumint_unsigned FROM t_data_type;
+----
+16777215
+
+query I nosort
+SELECT c_mediumint_zerofill FROM t_data_type;
+----
+1234567
+
+query I nosort
+SELECT c_int FROM t_data_type;
+----
+-2147483648
+
+query I nosort
+SELECT c_int_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_int_unsigned FROM t_data_type;
+----
+4294967295
+
+query I nosort
+SELECT c_int_zerofill FROM t_data_type;
+----
+123456789
+
+query I nosort
+SELECT c_integer FROM t_data_type;
+----
+-2147483648
+
+query I nosort
+SELECT c_integer_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_integer_unsigned FROM t_data_type;
+----
+4294967295
+
+query I nosort
+SELECT c_integer_zerofill FROM t_data_type;
+----
+123456789
+
+query I nosort
+SELECT c_bigint FROM t_data_type;
+----
+-9223372036854775806
+
+query I nosort
+SELECT c_bigint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_bigint_unsigned FROM t_data_type;
+----
+18446744073709551615
+
+query I nosort
+SELECT c_bigint_zerofill FROM t_data_type;
+----
+1234567890123456789
+
+query R nosort
+SELECT c_decimal FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_decimal_5 FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_decimal_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_decimal_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_decimal_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_dec FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_dec_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_dec_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_dec_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_dec_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_numeric FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_numeric_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_numeric_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_numeric_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_numeric_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_fixed FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_fixed_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_fixed_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_fixed_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_fixed_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_float FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_float_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_float_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_float_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_float_zerofill FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_double FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_zerofill FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision_zerofill FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_real FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_real_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_real_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_real_zerofill FROM t_data_type;
+----
+123.45
+
+query D nosort
+SELECT c_date FROM t_data_type;
+----
+2023-05-19
+
+query D nosort
+SELECT c_datetime FROM t_data_type;
+----
+2023-05-19 12:34:56
+
+query D nosort
+SELECT c_datetime_6 FROM t_data_type;
+----
+2023-05-19 12:34:56.789000
+
+query D nosort
+SELECT c_timestamp FROM t_data_type;
+----
+2023-05-19 12:34:56
+
+query D nosort
+SELECT c_timestamp_6 FROM t_data_type;
+----
+2023-05-19 12:34:56.789000
+
+query D nosort
+SELECT c_time FROM t_data_type;
+----
+12:34:56
+
+query D nosort
+SELECT c_time_6 FROM t_data_type;
+----
+12:34:56.789000
+
+query I nosort
+SELECT c_year FROM t_data_type;
+----
+2023
+
+query I nosort
+SELECT c_year_4 FROM t_data_type;
+----
+2023
+
+query T nosort
+SELECT c_char FROM t_data_type;
+----
+A
+
+query T nosort
+SELECT c_national_char FROM t_data_type;
+----
+B
+
+query T nosort
+SELECT c_char_8 FROM t_data_type;
+----
+ABCDEFGH
+
+query T nosort
+SELECT c_char_character_set_utf8 FROM t_data_type;
+----
+I
+
+query T nosort
+SELECT c_char_collate_utf8_bin FROM t_data_type;
+----
+Q
+
+query T nosort
+SELECT c_national_varchar_8 FROM t_data_type;
+----
+ABCDEFGH
+
+query T nosort
+SELECT c_varchar_8 FROM t_data_type;
+----
+JKLMNOPQ
+
+query T nosort
+SELECT c_varchar_8_character_set_utf8 FROM t_data_type;
+----
+RSTUVWXY
+
+query T nosort
+SELECT c_varchar_8_collate_utf8_bin FROM t_data_type;
+----
+RSTUVWXY
+
+query B nosort
+SELECT c_binary FROM t_data_type;
+----
+b
+
+query B nosort
+SELECT c_binary_8 FROM t_data_type;
+----
+bin8    
+
+query B nosort
+SELECT c_varbinary_8 FROM t_data_type;
+----
+vbin8
+
+query B nosort
+SELECT c_tinyblob FROM t_data_type;
+----
+tinyblob
+
+query B nosort
+SELECT c_blob FROM t_data_type;
+----
+blob
+
+query B nosort
+SELECT c_blob_8 FROM t_data_type;
+----
+blob8
+
+query B nosort
+SELECT c_mediumblob FROM t_data_type;
+----
+mediumblob
+
+query B nosort
+SELECT c_longblob FROM t_data_type;
+----
+longblob
+
+query T nosort
+SELECT c_tinytext FROM t_data_type;
+----
+tinytext
+
+query T nosort
+SELECT c_tinytext_character_set_utf8 FROM t_data_type;
+----
+tinytext_utf8
+
+query T nosort
+SELECT c_tinytext_collate_utf8_bin FROM t_data_type;
+----
+tinytext_bin
+
+query T nosort
+SELECT c_text FROM t_data_type;
+----
+text
+
+query T nosort
+SELECT c_text_8 FROM t_data_type;
+----
+text8
+
+query T nosort
+SELECT c_text_character_set_utf8 FROM t_data_type;
+----
+text_utf8
+
+query T nosort
+SELECT c_text_collate_utf8_bin FROM t_data_type;
+----
+text_bin
+
+query T nosort
+SELECT c_mediumtext FROM t_data_type;
+----
+mediumtext
+
+query T nosort
+SELECT c_mediumtext_character_set_utf8 FROM t_data_type;
+----
+mediumtext_utf8
+
+query T nosort
+SELECT c_mediumtext_collate_utf8_bin FROM t_data_type;
+----
+mediumtext_bin
+
+query T nosort
+SELECT c_longtext FROM t_data_type;
+----
+longtext
+
+query T nosort
+SELECT c_longtext_character_set_utf8 FROM t_data_type;
+----
+longtext_utf8
+
+query T nosort
+SELECT c_longtext_collate_utf8_bin FROM t_data_type;
+----
+longtext_bin
+
+query T nosort
+SELECT c_enum FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_enum_character_set_utf8 FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_enum_collate_utf8_bin FROM t_data_type;
+----
+value2
+
+query T nosort
+SELECT c_set FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_set_character_set_utf8 FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_set_collate_utf8_bin FROM t_data_type;
+----
+value2
+
+query J nosort
+SELECT c_json FROM t_data_type;
+----
+{"key1": "value1", "key2": "value2"}
+
+# To test the accuracy of the cache, rerun all the SELECT statements
+
+query T nosort
+SELECT c_bit FROM t_data_type;
+----
+
+
+query T nosort
+SELECT c_bit_64 FROM t_data_type;
+----
+UUUUUU@
+
+query I nosort
+SELECT c_bool FROM t_data_type;
+----
+0
+
+query I nosort
+SELECT c_boolean FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_tinyint FROM t_data_type;
+----
+-128
+
+query I nosort
+SELECT c_tinyint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_tinyint_unsigned FROM t_data_type;
+----
+255
+
+query I nosort
+SELECT c_tinyint_zerofill FROM t_data_type;
+----
+123
+
+query I nosort
+SELECT c_smallint FROM t_data_type;
+----
+-32768
+
+query I nosort
+SELECT c_smallint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_smallint_unsigned FROM t_data_type;
+----
+65535
+
+query I nosort
+SELECT c_smallint_zerofill FROM t_data_type;
+----
+12345
+
+query I nosort
+SELECT c_mediumint FROM t_data_type;
+----
+-8388608
+
+query I nosort
+SELECT c_mediumint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_mediumint_unsigned FROM t_data_type;
+----
+16777215
+
+query I nosort
+SELECT c_mediumint_zerofill FROM t_data_type;
+----
+1234567
+
+query I nosort
+SELECT c_int FROM t_data_type;
+----
+-2147483648
+
+query I nosort
+SELECT c_int_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_int_unsigned FROM t_data_type;
+----
+4294967295
+
+query I nosort
+SELECT c_int_zerofill FROM t_data_type;
+----
+123456789
+
+query I nosort
+SELECT c_integer FROM t_data_type;
+----
+-2147483648
+
+query I nosort
+SELECT c_integer_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_integer_unsigned FROM t_data_type;
+----
+4294967295
+
+query I nosort
+SELECT c_integer_zerofill FROM t_data_type;
+----
+123456789
+
+query I nosort
+SELECT c_bigint FROM t_data_type;
+----
+-9223372036854775806
+
+query I nosort
+SELECT c_bigint_1 FROM t_data_type;
+----
+1
+
+query I nosort
+SELECT c_bigint_unsigned FROM t_data_type;
+----
+18446744073709551615
+
+query I nosort
+SELECT c_bigint_zerofill FROM t_data_type;
+----
+1234567890123456789
+
+query R nosort
+SELECT c_decimal FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_decimal_5 FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_decimal_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_decimal_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_decimal_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_dec FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_dec_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_dec_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_dec_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_dec_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_numeric FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_numeric_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_numeric_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_numeric_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_numeric_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_fixed FROM t_data_type;
+----
+123
+
+query R nosort
+SELECT c_fixed_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_fixed_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_fixed_unsigned FROM t_data_type;
+----
+123
+
+skipif mysql
+query R nosort
+SELECT c_fixed_zerofill FROM t_data_type;
+----
+0000012345
+
+query R nosort
+SELECT c_float FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_float_5 FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_float_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_float_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_float_zerofill FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_double FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_zerofill FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_double_precision_zerofill FROM t_data_type;
+----
+12345
+
+query R nosort
+SELECT c_real FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_real_5_2 FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_real_unsigned FROM t_data_type;
+----
+123.45
+
+query R nosort
+SELECT c_real_zerofill FROM t_data_type;
+----
+123.45
+
+query D nosort
+SELECT c_date FROM t_data_type;
+----
+2023-05-19
+
+query D nosort
+SELECT c_datetime FROM t_data_type;
+----
+2023-05-19 12:34:56
+
+query D nosort
+SELECT c_datetime_6 FROM t_data_type;
+----
+2023-05-19 12:34:56.789000
+
+query D nosort
+SELECT c_timestamp FROM t_data_type;
+----
+2023-05-19 12:34:56
+
+query D nosort
+SELECT c_timestamp_6 FROM t_data_type;
+----
+2023-05-19 12:34:56.789000
+
+query D nosort
+SELECT c_time FROM t_data_type;
+----
+12:34:56
+
+query D nosort
+SELECT c_time_6 FROM t_data_type;
+----
+12:34:56.789000
+
+query I nosort
+SELECT c_year FROM t_data_type;
+----
+2023
+
+query I nosort
+SELECT c_year_4 FROM t_data_type;
+----
+2023
+
+query T nosort
+SELECT c_char FROM t_data_type;
+----
+A
+
+query T nosort
+SELECT c_national_char FROM t_data_type;
+----
+B
+
+query T nosort
+SELECT c_char_8 FROM t_data_type;
+----
+ABCDEFGH
+
+query T nosort
+SELECT c_char_character_set_utf8 FROM t_data_type;
+----
+I
+
+query T nosort
+SELECT c_char_collate_utf8_bin FROM t_data_type;
+----
+Q
+
+query T nosort
+SELECT c_national_varchar_8 FROM t_data_type;
+----
+ABCDEFGH
+
+query T nosort
+SELECT c_varchar_8 FROM t_data_type;
+----
+JKLMNOPQ
+
+query T nosort
+SELECT c_varchar_8_character_set_utf8 FROM t_data_type;
+----
+RSTUVWXY
+
+query T nosort
+SELECT c_varchar_8_collate_utf8_bin FROM t_data_type;
+----
+RSTUVWXY
+
+query B nosort
+SELECT c_binary FROM t_data_type;
+----
+b
+
+query B nosort
+SELECT c_binary_8 FROM t_data_type;
+----
+bin8    
+
+query B nosort
+SELECT c_varbinary_8 FROM t_data_type;
+----
+vbin8
+
+query B nosort
+SELECT c_tinyblob FROM t_data_type;
+----
+tinyblob
+
+query B nosort
+SELECT c_blob FROM t_data_type;
+----
+blob
+
+query B nosort
+SELECT c_blob_8 FROM t_data_type;
+----
+blob8
+
+query B nosort
+SELECT c_mediumblob FROM t_data_type;
+----
+mediumblob
+
+query B nosort
+SELECT c_longblob FROM t_data_type;
+----
+longblob
+
+query T nosort
+SELECT c_tinytext FROM t_data_type;
+----
+tinytext
+
+query T nosort
+SELECT c_tinytext_character_set_utf8 FROM t_data_type;
+----
+tinytext_utf8
+
+query T nosort
+SELECT c_tinytext_collate_utf8_bin FROM t_data_type;
+----
+tinytext_bin
+
+query T nosort
+SELECT c_text FROM t_data_type;
+----
+text
+
+query T nosort
+SELECT c_text_8 FROM t_data_type;
+----
+text8
+
+query T nosort
+SELECT c_text_character_set_utf8 FROM t_data_type;
+----
+text_utf8
+
+query T nosort
+SELECT c_text_collate_utf8_bin FROM t_data_type;
+----
+text_bin
+
+query T nosort
+SELECT c_mediumtext FROM t_data_type;
+----
+mediumtext
+
+query T nosort
+SELECT c_mediumtext_character_set_utf8 FROM t_data_type;
+----
+mediumtext_utf8
+
+query T nosort
+SELECT c_mediumtext_collate_utf8_bin FROM t_data_type;
+----
+mediumtext_bin
+
+query T nosort
+SELECT c_longtext FROM t_data_type;
+----
+longtext
+
+query T nosort
+SELECT c_longtext_character_set_utf8 FROM t_data_type;
+----
+longtext_utf8
+
+query T nosort
+SELECT c_longtext_collate_utf8_bin FROM t_data_type;
+----
+longtext_bin
+
+query T nosort
+SELECT c_enum FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_enum_character_set_utf8 FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_enum_collate_utf8_bin FROM t_data_type;
+----
+value2
+
+query T nosort
+SELECT c_set FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_set_character_set_utf8 FROM t_data_type;
+----
+value1
+
+query T nosort
+SELECT c_set_collate_utf8_bin FROM t_data_type;
+----
+value2
+
+query J nosort
+SELECT c_json FROM t_data_type;
+----
+{"key1": "value1", "key2": "value2"}
+
+query I nosort
+SELECT c_tinyint_1 FROM t_data_type WHERE c_tinyint_1 = 1;
+----
+1
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_data_type;

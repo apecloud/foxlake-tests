@@ -1,0 +1,145 @@
+statement ok
+DROP DATABASE IF EXISTS test_cluster_key;
+
+statement ok
+CREATE DATABASE test_cluster_key;
+
+statement ok
+USE test_cluster_key;
+
+
+########################## ============== create table with cluster keys ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (a int, b int, c int) cluster by(a, b);
+
+query T nosort
+select clustering_information("test_cluster_key", "t");
+----
+{"cluster_keys":"a,b","total_partition_count":"0","total_const_partition_count":"0","avg_overlaps":0.0,"avg_depth":0.0,"max_depth":"0","partition_depth_histogram":{}}
+
+statement ok
+drop table if exists t;
+
+statement error
+create table t (a int, b int, c int) cluster by(a, d);
+
+statement ok
+create table t (a int, b int, c int) cluster by();
+
+statement error
+select clustering_information("test_cluster_key", "t");
+
+statement ok
+drop table if exists t;
+
+########################## ============== alter table cluster keys ============== ##########################
+statement ok
+create table t (a int, b int, c int) cluster by();
+
+statement ok
+alter table t cluster by(a);
+
+query T nosort
+select clustering_information("test_cluster_key", "t");
+----
+{"cluster_keys":"a","total_partition_count":"0","total_const_partition_count":"0","avg_overlaps":0.0,"avg_depth":0.0,"max_depth":"0","partition_depth_histogram":{}}
+
+statement ok
+alter table t drop cluster key;
+
+statement error
+select clustering_information("test_cluster_key", "t");
+
+statement ok
+alter table t cluster by();
+
+statement error
+select clustering_information("test_cluster_key", "t");
+
+statement error
+alter table t cluster by(non);
+
+statement ok
+drop table if exists t;
+
+########################## ============== correctness of clustering_information ============== ##########################
+
+statement ok
+create table t (a int, b int, c int) cluster by(a, b);
+
+statement ok
+insert into t values(1, 2, 1), (1, 3, 1);
+
+statement ok
+insert into t values(1, 4, 2), (2, 3, 2);
+
+statement ok
+insert into t values(1, 1, 3), (1, 2, 3);
+
+query T nosort
+select clustering_information("test_cluster_key", "t");
+----
+{"cluster_keys":"a,b","total_partition_count":"3","total_const_partition_count":"0","avg_overlaps":1.3333,"avg_depth":2.0,"max_depth":"2","partition_depth_histogram":{"00002":"3"}}
+
+query T nosort
+select clustering_information("test_cluster_key", "t", "a");
+----
+{"cluster_keys":"a","total_partition_count":"3","total_const_partition_count":"2","avg_overlaps":2.0,"avg_depth":3.0,"max_depth":"3","partition_depth_histogram":{"00003":"3"}}
+
+query T nosort
+select clustering_information("test_cluster_key", "t", "b");
+----
+{"cluster_keys":"b","total_partition_count":"3","total_const_partition_count":"0","avg_overlaps":1.3333,"avg_depth":2.0,"max_depth":"2","partition_depth_histogram":{"00002":"3"}}
+
+query T nosort
+select clustering_information("test_cluster_key", "t", "c");
+----
+{"cluster_keys":"c","total_partition_count":"3","total_const_partition_count":"3","avg_overlaps":0.0,"avg_depth":1.0,"max_depth":"1","partition_depth_histogram":{"00001":"3"}}
+
+query T nosort
+select clustering_information("test_cluster_key", "t", "c", "b");
+----
+{"cluster_keys":"c,b","total_partition_count":"3","total_const_partition_count":"0","avg_overlaps":0.0,"avg_depth":1.0,"max_depth":"1","partition_depth_histogram":{"00001":"3"}}
+
+statement ok
+truncate table t;
+
+query T nosort
+select clustering_information("test_cluster_key", "t", "a");
+----
+{"cluster_keys":"a","total_partition_count":"0","total_const_partition_count":"0","avg_overlaps":0.0,"avg_depth":0.0,"max_depth":"0","partition_depth_histogram":{}}
+
+statement ok
+drop table if exists t;
+
+########################## ============== reorg by multi-line cluster key ============== ##########################
+statement ok
+create table t (a int, b VARCHAR(10), c int) cluster by(a, b);
+
+statement ok
+insert into t values(1, "Hello", 1), (1, "ApeCloud", 1);
+
+statement ok
+insert into t values(2, "FoxLake", 2), (2, "Hello", 2);
+
+statement ok
+insert into t values(3, "Hello", 3), (3, "Duck", 3);
+
+statement ok
+reorg t;
+
+query I nosort
+select count(*) from t group by `__sys_mp_id__`;
+----
+6
+
+statement ok
+drop table if exists t;
+
+statement ok
+DROP DATABASE IF EXISTS test_cluster_key;

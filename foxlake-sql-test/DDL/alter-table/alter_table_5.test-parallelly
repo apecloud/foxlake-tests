@@ -1,0 +1,73 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_5;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_5;
+
+statement ok
+USE test_ddls_alter_table_5;
+
+
+########################## ============== alter_option ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tt;
+
+statement ok
+CREATE TABLE t (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100));
+
+statement ok
+CREATE TABLE tt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100), KEY (i), KEY (id, i));
+
+
+# ====================== Add Check Constraint ====================
+
+
+statement ok
+ALTER TABLE t ADD CHECK (id + 6 > 10);
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT CHECK (id + 6 > 10);
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT c_cons1 CHECK (id + 6 > 10);
+
+statement ok
+ALTER TABLE t ADD CHECK (id + 6 > 10) ENFORCED;
+
+statement ok
+ALTER TABLE t ADD CHECK (id + 6 > 10) NOT ENFORCED;
+
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT c_cons CHECK (id + 6 > 10);
+
+statement ok
+ALTER TABLE t DROP CHECK c_cons;
+
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT c_cons CHECK (id + 6 > 10);
+
+statement ok
+ALTER TABLE t DROP CONSTRAINT c_cons;
+
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT c_cons CHECK (id + 6 > 10);
+
+statement ok
+ALTER TABLE t ALTER CHECK c_cons ENFORCED;
+
+statement ok
+ALTER TABLE t ALTER CHECK c_cons NOT ENFORCED;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_5;

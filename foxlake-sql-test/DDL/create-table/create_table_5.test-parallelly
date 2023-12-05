@@ -1,0 +1,155 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_5;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_5;
+
+statement ok
+USE test_ddls_create_table_5;
+
+
+########################## ============== data_type ============== ##########################
+
+
+# ================= Spatial ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c GEOMETRY);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c POINT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c LINESTRING);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c POLYGON);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MULTIPOINT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MULTILINESTRING);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MULTIPOLYGON);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c GEOMETRYCOLLECTION);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c GEOMETRY SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c POINT SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c LINESTRING SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c POLYGON SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MULTIPOINT SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MULTILINESTRING SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MULTIPOLYGON SRID 0);
+
+
+# syntax error, SRID not supported.
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c GEOMETRYCOLLECTION SRID 0);
+
+
+# ================= JSON ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c JSON);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_5;

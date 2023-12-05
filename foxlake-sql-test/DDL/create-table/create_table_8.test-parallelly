@@ -1,0 +1,327 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_8;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_8;
+
+statement ok
+USE test_ddls_create_table_8;
+
+
+########################## ============== partition_options ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id + 1);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY LINEAR HASH(id + 1);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY KEY (id);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint NOT NULL, s varchar(100), i int, PRIMARY KEY (id, i)) PARTITION BY KEY (id, i);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY LINEAR KEY (id);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY KEY ALGORITHM=1 (id);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY KEY ALGORITHM=2 (id);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN (200), PARTITION p2 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint NOT NULL, s varchar(100), i int, PRIMARY KEY (id, i)) PARTITION BY RANGE COLUMNS(id, i) (PARTITION p0 VALUES LESS THAN (100, 100), PARTITION p1 VALUES LESS THAN (200, 200), PARTITION p2 VALUES LESS THAN (MAXVALUE, MAXVALUE));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY LIST (id) (PARTITION r0 VALUES IN (1, 2), PARTITION r1 VALUES IN (3, 4), PARTITION r2 VALUES IN (5, 6));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint NOT NULL, s varchar(100), i int, PRIMARY KEY (id, i)) PARTITION BY LIST COLUMNS(id, i) (PARTITION r0 VALUES IN ((1, 1), (2, 2)), PARTITION r1 VALUES IN ((3, 3), (4, 4)), PARTITION r2 VALUES IN ((5, 5), (6, 6)));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 8;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY HASH (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY HASH (id + 1) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY LINEAR HASH (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint NOT NULL, s varchar(100), i int, PRIMARY KEY (id, i)) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id, i) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY LINEAR KEY (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY KEY ALGORITHM = 1 (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY KEY ALGORITHM = 2 (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id) SUBPARTITIONS 8 (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN MAXVALUE);
+
+
+
+########################## ============== partition_definition ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 2 (PARTITION p0, PARTITION p1);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 ENGINE = 'InnoDB');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 STORAGE ENGINE = 'InnoDB');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 COMMENT = 'This is a partition.');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 DATA DIRECTORY = '/');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 MAX_ROWS = 1024);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 MIN_ROWS = 1024);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY HASH(id) PARTITIONS 1 (PARTITION p0 TABLESPACE = innodb_system);
+
+
+
+########################## ============== subpartition_definition ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 2 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1, SUBPARTITION sp2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 ENGINE = 'InnoDB'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 STORAGE ENGINE = 'InnoDB'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 COMMENT = 'This is a subpartition.'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 DATA DIRECTORY = '/'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 INDEX DIRECTORY = '/'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 MAX_ROWS = 1024));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 MIN_ROWS = 1024));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint PRIMARY KEY NOT NULL, s varchar(100), i int) PARTITION BY RANGE (id) PARTITIONS 1 SUBPARTITION BY KEY (id) SUBPARTITIONS 1 (PARTITION p1 VALUES LESS THAN MAXVALUE (SUBPARTITION sp1 TABLESPACE = innodb_system));
+
+
+
+########################## ============== tablespace_option ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) TABLESPACE innodb_system;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) TABLESPACE innodb_system STORAGE DISK;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STORAGE MEMORY;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) TABLESPACE innodb_system STORAGE MEMORY;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_8;

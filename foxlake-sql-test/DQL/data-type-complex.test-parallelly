@@ -1,0 +1,21 @@
+statement ok
+DROP DATABASE IF EXISTS data_type_complex;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS data_type_complex;
+
+statement ok
+USE data_type_complex;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (PK INT, COL_YEAR YEAR, PRIMARY KEY(PK));
+
+statement ok
+INSERT INTO t(PK, COL_YEAR)
+VALUES (1, 2023);
+
+statement ok
+DROP DATABASE IF EXISTS data_type_complex;

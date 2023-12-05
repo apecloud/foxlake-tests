@@ -1,0 +1,134 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_10;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_10;
+
+statement ok
+USE test_ddls_alter_table_10;
+
+
+########################## ============== partition_options ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tt;
+
+statement ok
+DROP TABLE IF EXISTS ttt;
+
+statement ok
+CREATE TABLE t (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY HASH(id);
+
+statement ok
+CREATE TABLE tt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN (200));
+
+statement ok
+CREATE TABLE ttt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY RANGE (id) SUBPARTITION BY KEY (id) SUBPARTITIONS 2 (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN (200));
+
+
+# ====================== Add Partition ====================
+
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p1);
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p2 VALUES LESS THAN (200 * 3));
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p2 ENGINE = InnoDB);
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p3 STORAGE ENGINE = InnoDB);
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p4 COMMENT = 'This is a new partition');
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p5 DATA DIRECTORY = '/');
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p6 INDEX DIRECTORY = '/');
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p7 MAX_ROWS = 1024);
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p8 MIN_ROWS = 1024);
+
+statement ok
+ALTER TABLE t ADD PARTITION (PARTITION p9 TABLESPACE = innodb_system);
+
+
+# ====================== Add Sub-Partition ====================
+
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p3 VALUES LESS THAN (300 * 3) (SUBPARTITION sp3));
+
+statement ok
+ALTER TABLE ttt ADD PARTITION (PARTITION p4 VALUES LESS THAN (400 * 3) (SUBPARTITION sp2, SUBPARTITION sp3));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p5 VALUES LESS THAN (500 * 3) (SUBPARTITION sp5 ENGINE = InnoDB));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p6 VALUES LESS THAN (600 * 3) (SUBPARTITION sp6 STORAGE ENGINE = InnoDB));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p7 VALUES LESS THAN (700 * 3) (SUBPARTITION sp7 COMMENT = 'This is a subpartition.'));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p8 VALUES LESS THAN (800 * 3) (SUBPARTITION sp8 DATA DIRECTORY = '/'));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p9 VALUES LESS THAN (900 * 3) (SUBPARTITION sp9 INDEX DIRECTORY = '/'));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p10 VALUES LESS THAN (1000 * 3) (SUBPARTITION sp10 MAX_ROWS = 1024));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p11 VALUES LESS THAN (1100 * 3) (SUBPARTITION sp11 MIN_ROWS = 1024));
+
+statement ok
+ALTER TABLE tt ADD PARTITION (PARTITION p12 VALUES LESS THAN (1200 * 3) (SUBPARTITION sp12 TABLESPACE = innodb_system));
+
+
+# ====================== Drop/Discard/Import Partition ====================
+
+
+statement ok
+ALTER TABLE tt DROP PARTITION p0;
+
+statement ok
+ALTER TABLE tt DROP PARTITION p3, p5;
+
+
+statement ok
+ALTER TABLE tt DISCARD PARTITION p6 TABLESPACE;
+
+statement ok
+ALTER TABLE tt DISCARD PARTITION p10, p11 TABLESPACE;
+
+statement ok
+ALTER TABLE tt DISCARD PARTITION ALL TABLESPACE;
+
+
+statement ok
+ALTER TABLE tt IMPORT PARTITION p6 TABLESPACE;
+
+statement ok
+ALTER TABLE tt IMPORT PARTITION p10, p11 TABLESPACE;
+
+statement ok
+ALTER TABLE tt IMPORT PARTITION ALL TABLESPACE;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_10;

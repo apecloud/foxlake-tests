@@ -1,0 +1,77 @@
+statement ok
+DROP DATABASE IF EXISTS test_current_timestamp;
+
+statement ok
+CREATE DATABASE test_current_timestamp;
+
+statement ok
+USE test_current_timestamp;
+
+# Test on append-only table
+
+statement ok
+CREATE TABLE t_time_func_ao (id BIGINT PRIMARY KEY, expected VARCHAR(100), ts_0 TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ts_3 TIMESTAMP(3), ts_6 TIMESTAMP(6) DEFAULT NULL, dt_0 DATETIME DEFAULT CURRENT_TIMESTAMP, dt_3 DATETIME(3), dt_6 DATETIME(6) DEFAULT NULL, t_0 TIME, t_3 TIME(3), t_6 TIME(6), d DATE) APPEND_ONLY = TRUE;
+
+statement ok
+INSERT INTO t_time_func_ao (id, expected, ts_0, ts_3, ts_6, dt_0, dt_3, dt_6, t_0, t_3, t_6, d) VALUES (1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+
+statement ok
+INSERT INTO t_time_func_ao (id, expected, ts_3, ts_6, dt_3, dt_6, t_0, t_3, t_6, d) VALUES (2, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+
+# Checking the result in all temporal columns with the one in the column 'expected'
+query IIIIIIIIIII nosort
+SELECT id,
+    /* Comparing expected with ts_x */
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(ts_0 AS CHAR)) AS ts_0_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(3)), '%Y-%m-%d %H:%i:%s.%f'), 1, 23) = RPAD(CAST(ts_3 AS CHAR), 23, '0')) AS ts_3_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(6)), '%Y-%m-%d %H:%i:%s.%f'), 1, 26) = RPAD(CAST(ts_6 AS CHAR), 26, '0')) AS ts_6_eq,
+    /* Comparing expected with dt_x */
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(dt_0 AS CHAR)) AS dt_0_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(3)), '%Y-%m-%d %H:%i:%s.%f'), 1, 23) = RPAD(CAST(dt_3 AS CHAR), 23, '0')) AS dt_3_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(6)), '%Y-%m-%d %H:%i:%s.%f'), 1, 26) = RPAD(CAST(dt_6 AS CHAR), 26, '0')) AS dt_6_eq,
+    /* Comparing expected with t_x */
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s'), 12, 8) = CAST(t_0 AS CHAR)) AS t_0_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(3)), '%Y-%m-%d %H:%i:%s.%f'), 12, 12) = RPAD(CAST(t_3 AS CHAR), 12, '0')) AS t_3_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(6)), '%Y-%m-%d %H:%i:%s.%f'), 12, 15) = RPAD(CAST(t_6 AS CHAR), 15, '0')) AS t_6_eq,
+    /* Comparing expected with d */
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d'), 1, 10) = CAST(d AS CHAR)) AS d_eq
+FROM t_time_func_ao ORDER BY id;
+----
+1	1	1	1	1	1	1	1	1	1	1
+2	1	1	1	1	1	1	1	1	1	1
+
+# Test on non-append-only table
+
+statement ok
+CREATE TABLE t_time_func (id BIGINT PRIMARY KEY, expected VARCHAR(100), ts_0 TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ts_3 TIMESTAMP(3), ts_6 TIMESTAMP(6) DEFAULT NULL, dt_0 DATETIME DEFAULT CURRENT_TIMESTAMP, dt_3 DATETIME(3), dt_6 DATETIME(6) DEFAULT NULL, t_0 TIME, t_3 TIME(3), t_6 TIME(6), d DATE);
+
+statement ok
+INSERT INTO t_time_func (id, expected, ts_0, ts_3, ts_6, dt_0, dt_3, dt_6, t_0, t_3, t_6, d) VALUES (1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+
+statement ok
+INSERT INTO t_time_func (id, expected, ts_3, ts_6, dt_3, dt_6, t_0, t_3, t_6, d) VALUES (2, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+
+# Checking the result in all temporal columns with the one in the column 'expected'
+query IIIIIIIIIII nosort
+SELECT id,
+    /* Comparing expected with ts_x */
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(ts_0 AS CHAR)) AS ts_0_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(3)), '%Y-%m-%d %H:%i:%s.%f'), 1, 23) = RPAD(CAST(ts_3 AS CHAR), 23, '0')) AS ts_3_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(6)), '%Y-%m-%d %H:%i:%s.%f'), 1, 26) = RPAD(CAST(ts_6 AS CHAR), 26, '0')) AS ts_6_eq,
+    /* Comparing expected with dt_x */
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(dt_0 AS CHAR)) AS dt_0_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(3)), '%Y-%m-%d %H:%i:%s.%f'), 1, 23) = RPAD(CAST(dt_3 AS CHAR), 23, '0')) AS dt_3_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(6)), '%Y-%m-%d %H:%i:%s.%f'), 1, 26) = RPAD(CAST(dt_6 AS CHAR), 26, '0')) AS dt_6_eq,
+    /* Comparing expected with t_x */
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s'), 12, 8) = CAST(t_0 AS CHAR)) AS t_0_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(3)), '%Y-%m-%d %H:%i:%s.%f'), 12, 12) = RPAD(CAST(t_3 AS CHAR), 12, '0')) AS t_3_eq,
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME(6)), '%Y-%m-%d %H:%i:%s.%f'), 12, 15) = RPAD(CAST(t_6 AS CHAR), 15, '0')) AS t_6_eq,
+    /* Comparing expected with d */
+    (SUBSTR(DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d'), 1, 10) = CAST(d AS CHAR)) AS d_eq
+FROM t_time_func ORDER BY id;
+----
+1	1	1	1	1	1	1	1	1	1	1
+2	1	1	1	1	1	1	1	1	1	1
+
+statement ok
+DROP DATABASE IF EXISTS test_current_timestamp;

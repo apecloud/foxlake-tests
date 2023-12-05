@@ -1,0 +1,79 @@
+# Please put the directory 'cicd' to your bucket.
+# This directory can be found under the tests direcotory.
+#
+# Content of t1.csv:
+# 1|abc|2
+#
+# Content of t2.csv:
+# 1|abc|2
+# 2|def|2
+#
+# Content of t3.csv:
+# 1|abc|2
+# 2|def|2
+# 3|opq|2
+
+statement ok
+DROP DATABASE IF EXISTS load_data_infile;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS load_data_infile;
+
+statement ok
+USE load_data_infile;
+
+statement ok
+DROP TABLE IF EXISTS load_data_infile.t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS load_data_infile.t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_load_data_infile;
+
+statement ok
+CREATE DATABASE test_ddls_load_data_infile;
+
+statement ok
+USE test_ddls_load_data_infile;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+
+# Load data from a file
+statement ok
+LOAD DATA INFILE
+URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/t1.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') INTO TABLE t FIELDS TERMINATED BY '|' ENCLOSED BY '"';
+
+query ITI rowsort
+SELECT * FROM t;
+----
+1	abc	2
+
+# Load data from a directory
+statement ok
+LOAD DATA INFILE
+    URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/'
+    ENDPOINT = '{{.ENDPOINT}}'
+    CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') INTO TABLE t FIELDS TERMINATED BY '|' ENCLOSED BY '"';
+
+query ITI rowsort
+SELECT * FROM t;
+----
+1	abc	2
+1	abc	2
+1	abc	2
+1	abc	2
+2	def	2
+2	def	2
+3	opq	2
+
+statement ok
+DROP DATABASE IF EXISTS load_data_infile;

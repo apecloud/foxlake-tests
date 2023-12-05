@@ -1,0 +1,95 @@
+statement ok
+DROP DATABASE IF EXISTS merge_into;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS merge_into;
+
+statement ok
+USE merge_into;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id INT, msg VARCHAR(100));
+
+statement ok
+MERGE INTO t
+    using (select 1 AS id, 'hello' AS msg) s
+    on s.id = t.id
+    when matched then update set t.msg = 'world'
+    when not matched then insert values (s.id, s.msg);
+
+query IT nosort
+SELECT * FROM t;
+----
+1	hello
+
+statement ok
+MERGE INTO t
+    using (select 1 AS id, 'hello' AS msg) s
+    on s.id = t.id
+    when matched then update set t.msg = 'world'
+    when not matched then insert values (s.id, s.msg);
+
+query IT nosort
+SELECT * FROM t;
+----
+1	world
+
+statement ok
+MERGE INTO t
+    using (select 1 AS id, 'hello' AS msg) s
+    on s.id = t.id
+    when matched then delete
+    when not matched then insert values (s.id, s.msg);
+
+query I nosort
+select count(*) from t;
+----
+0
+
+# https://github.com/apecloud/foxlake/issues/795
+
+statement ok
+MERGE INTO t
+    using (select 1 AS id, 'world' AS msg) s
+    on s.id = t.id
+    when not matched then insert values (s.id, s.msg);
+
+statement ok
+MERGE INTO t
+    using (select 2 AS id, 'hello' AS msg) s
+    on s.id = t.id
+    when not matched then insert values (s.id, s.msg);
+
+statement ok
+MERGE INTO t
+    using (select 3 AS id, 'hello' AS msg) s
+    on s.id = t.id
+    when not matched then insert values (s.id, s.msg);
+
+statement ok
+MERGE INTO t
+    using (select 'hello' AS msg) s
+    on t.msg like s.msg
+    when matched then update set t.msg = 'fine';
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	world
+2	fine
+3	fine
+
+statement ok
+create table t_null_block (i int, ii int);
+
+statement ok
+insert into t_null_block (i) values (1), (1), (2), (2), (3), (3);
+
+statement ok
+select stage_table_data("merge_into.t_null_block", i, ii) from t_null_block group by i;
+
+statement ok
+DROP DATABASE IF EXISTS merge_into;

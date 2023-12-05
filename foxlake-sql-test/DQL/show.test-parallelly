@@ -1,0 +1,499 @@
+statement ok
+DROP DATABASE IF EXISTS xyz_show;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS xyz_show;
+
+statement ok
+USE xyz_show;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_show;
+
+statement ok
+CREATE DATABASE test_ddls_show;
+
+statement ok
+USE test_ddls_show;
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS xyz_show.t_xyz_show;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE IF NOT EXISTS xyz_show.t_xyz_show (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT, xyz_show INT);
+
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+statement ok
+CREATE OR REPLACE VIEW xyz_show.v_xyz_show AS select * from xyz_show.t_xyz_show;
+
+
+statement ok
+SHOW DATASOURCES;
+
+statement ok
+SHOW PROCEDURE STATUS;
+
+statement ok
+SHOW VARIABLES;
+
+statement ok
+BEGIN;
+
+statement ok
+SHOW VARIABLES LIKE 'sql_mode';
+
+statement ok
+SHOW VARIABLES;
+
+statement ok
+COMMIT;
+
+statement ok
+SHOW PROCESSLIST;
+
+statement ok
+SHOW TABLE STATUS;
+
+statement ok
+SHOW SLOW;
+
+statement ok
+SHOW STC;
+
+statement ok
+SHOW HTC;
+
+statement ok
+SHOW DS;
+
+statement ok
+SHOW DB STATUS;
+
+statement ok
+SHOW STATS;
+
+statement ok
+SHOW TRACE;
+
+statement ok
+SHOW SEQUENCES;
+
+statement ok
+SHOW GRANTS;
+
+statement ok
+SHOW PROFILE;
+
+statement ok
+SHOW METADATA LOCK;
+
+statement ok
+SHOW TRANS;
+
+statement ok
+SHOW LOCAL DEADLOCKS;
+
+statement ok
+SHOW GLOBAL DEADLOCKS;
+
+
+statement ok
+SHOW DATABASES;
+
+query T nosort
+SHOW TABLES;
+----
+t
+
+query T nosort
+SHOW TABLES FROM test_ddls_show;
+----
+t
+
+query T nosort
+SHOW TABLES FROM xyz_show;
+----
+t_xyz_show
+
+
+query TT nosort
+SHOW CREATE DATABASE test_ddls_show;
+----
+test_ddls_show	CREATE DATABASE `test_ddls_show` /* MODE = 'drds' */
+
+query TT nosort
+SHOW CREATE DATABASE xyz_show;
+----
+xyz_show	CREATE DATABASE `xyz_show` /* MODE = 'drds' */
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_show_all_data_types (
+  c_bit BIT,
+  c_bit_64 BIT(64),
+  c_bool BOOL,
+  c_boolean BOOLEAN,
+  c_tinyint TINYINT,
+  c_tinyint_1 TINYINT(1),
+  c_tinyint_unsigned TINYINT UNSIGNED,
+  c_tinyint_zerofill TINYINT ZEROFILL,
+  c_smallint SMALLINT,
+  c_smallint_1 SMALLINT(1),
+  c_smallint_unsigned SMALLINT UNSIGNED,
+  c_smallint_zerofill SMALLINT ZEROFILL,
+  c_mediumint MEDIUMINT,
+  c_mediumint_1 MEDIUMINT(1),
+  c_mediumint_unsigned MEDIUMINT UNSIGNED,
+  c_mediumint_zerofill MEDIUMINT ZEROFILL,
+  c_int INT,
+  c_int_1 INT(1),
+  c_int_unsigned INT UNSIGNED,
+  c_int_zerofill INT ZEROFILL,
+  c_integer INTEGER,
+  c_integer_1 INTEGER(1),
+  c_integer_unsigned INTEGER UNSIGNED,
+  c_integer_zerofill INTEGER ZEROFILL,
+  c_bigint BIGINT,
+  c_bigint_1 BIGINT(1),
+  c_bigint_unsigned BIGINT UNSIGNED,
+  c_bigint_zerofill BIGINT ZEROFILL,
+  c_decimal DECIMAL,
+  c_decimal_5 DECIMAL(5),
+  c_decimal_5_2 DECIMAL(5, 2),
+  c_decimal_unsigned DECIMAL UNSIGNED,
+  c_decimal_zerofill DECIMAL ZEROFILL,
+  c_dec DEC,
+  c_dec_5 DEC(5),
+  c_dec_5_2 DEC(5, 2),
+  c_dec_unsigned DEC UNSIGNED,
+  c_dec_zerofill DEC ZEROFILL,
+  c_numeric NUMERIC,
+  c_numeric_5 NUMERIC(5),
+  c_numeric_5_2 NUMERIC(5, 2),
+  c_numeric_unsigned NUMERIC UNSIGNED,
+  c_numeric_zerofill NUMERIC ZEROFILL,
+  c_fixed FIXED,
+  c_fixed_5 FIXED(5),
+  c_fixed_5_2 FIXED(5, 2),
+  c_fixed_unsigned FIXED UNSIGNED,
+  c_fixed_zerofill FIXED ZEROFILL,
+  c_float FLOAT,
+  c_float_5 FLOAT(5),
+  c_float_5_2 FLOAT(5, 2),
+  c_float_unsigned FLOAT UNSIGNED,
+  c_float_zerofill FLOAT ZEROFILL,
+  c_double DOUBLE,
+  c_double_5_2 DOUBLE(5, 2),
+  c_double_unsigned DOUBLE UNSIGNED,
+  c_double_zerofill DOUBLE ZEROFILL,
+  c_double_precision DOUBLE PRECISION,
+  c_double_precision_5_2 DOUBLE PRECISION(5, 2),
+  c_double_precision_unsigned DOUBLE PRECISION UNSIGNED,
+  c_double_precision_zerofill DOUBLE PRECISION ZEROFILL,
+  c_real REAL,
+  c_real_5_2 REAL(5, 2),
+  c_real_unsigned REAL UNSIGNED,
+  c_real_zerofill REAL ZEROFILL,
+  c_date DATE,
+  c_datetime DATETIME,
+  c_datetime_6 DATETIME(6),
+  c_timestamp TIMESTAMP,
+  c_timestamp_6 TIMESTAMP(6),
+  c_time TIME,
+  c_time_6 TIME(6),
+  c_year YEAR,
+  c_year_4 YEAR(4),
+  c_char CHAR,
+  c_national_char NATIONAL CHAR,
+  c_char_8 CHAR(8),
+  c_char_character_set_utf8 CHAR CHARACTER SET utf8,
+  c_char_collate_utf8_bin CHAR COLLATE utf8_bin,
+  c_national_varchar_8 NATIONAL VARCHAR(8),
+  c_varchar_8 VARCHAR(8),
+  c_varchar_8_character_set_utf8 VARCHAR(8) CHARACTER SET utf8,
+  c_varchar_8_collate_utf8_bin VARCHAR(8) COLLATE utf8_bin,
+  c_binary BINARY,
+  c_binary_8 BINARY(8),
+  c_varbinary_8 VARBINARY(8),
+  c_tinyblob TINYBLOB,
+  c_blob BLOB,
+  c_blob_8 BLOB(8),
+  c_mediumblob MEDIUMBLOB,
+  c_longblob LONGBLOB,
+  c_tinytext TINYTEXT,
+  c_tinytext_character_set_utf8 TINYTEXT CHARACTER SET utf8,
+  c_tinytext_collate_utf8_bin TINYTEXT COLLATE utf8_bin,
+  c_text TEXT,
+  c_text_8 TEXT(8),
+  c_text_character_set_utf8 TEXT CHARACTER SET utf8,
+  c_text_collate_utf8_bin TEXT COLLATE utf8_bin,
+  c_mediumtext MEDIUMTEXT,
+  c_mediumtext_character_set_utf8 MEDIUMTEXT CHARACTER SET utf8,
+  c_mediumtext_collate_utf8_bin MEDIUMTEXT COLLATE utf8_bin,
+  c_longtext LONGTEXT,
+  c_longtext_character_set_utf8 LONGTEXT CHARACTER SET utf8,
+  c_longtext_collate_utf8_bin LONGTEXT COLLATE utf8_bin,
+  c_enum ENUM('value1', 'value2'),
+  c_enum_character_set_utf8 ENUM('value1', 'value2') CHARACTER SET utf8,
+  c_enum_collate_utf8_bin ENUM('value1', 'value2') COLLATE utf8_bin,
+  c_set SET('value1', 'value2'),
+  c_set_character_set_utf8 SET('value1', 'value2') CHARACTER SET utf8,
+  c_set_collate_utf8_bin SET('value1', 'value2') COLLATE utf8_bin,
+  c_json JSON
+);
+
+query TT nosort
+SHOW CREATE TABLE t;
+----
+t	CREATE TABLE `t` (\n  `id` bigint NOT NULL,\n  `s` varchar(100) DEFAULT NULL,\n  `i` int DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE = 'COLUMNAR@default' DEFAULT CHARSET = utf8mb4 DEFAULT COLLATE = utf8mb4_0900_ai_ci
+
+query TT nosort
+SHOW CREATE TABLE xyz_show.t_xyz_show;
+----
+t_xyz_show	CREATE TABLE `t_xyz_show` (\n  `id` bigint NOT NULL,\n  `s` varchar(100) DEFAULT NULL,\n  `i` int DEFAULT NULL,\n  `xyz_show` int DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE = 'COLUMNAR@default' DEFAULT CHARSET = utf8mb4 DEFAULT COLLATE = utf8mb4_0900_ai_ci
+
+query TT nosort
+SHOW CREATE TABLE t_show_all_data_types;
+----
+t_show_all_data_types	CREATE TABLE `t_show_all_data_types` (\n  `c_bit` bit(1) DEFAULT NULL,\n  `c_bit_64` bit(64) DEFAULT NULL,\n  `c_bool` tinyint(1) DEFAULT NULL,\n  `c_boolean` tinyint(1) DEFAULT NULL,\n  `c_tinyint` tinyint DEFAULT NULL,\n  `c_tinyint_1` tinyint(1) DEFAULT NULL,\n  `c_tinyint_unsigned` tinyint UNSIGNED DEFAULT NULL,\n  `c_tinyint_zerofill` tinyint(3) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_smallint` smallint DEFAULT NULL,\n  `c_smallint_1` smallint DEFAULT NULL,\n  `c_smallint_unsigned` smallint UNSIGNED DEFAULT NULL,\n  `c_smallint_zerofill` smallint(5) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_mediumint` mediumint DEFAULT NULL,\n  `c_mediumint_1` mediumint DEFAULT NULL,\n  `c_mediumint_unsigned` mediumint UNSIGNED DEFAULT NULL,\n  `c_mediumint_zerofill` mediumint(8) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_int` int DEFAULT NULL,\n  `c_int_1` int DEFAULT NULL,\n  `c_int_unsigned` int UNSIGNED DEFAULT NULL,\n  `c_int_zerofill` int(10) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_integer` int DEFAULT NULL,\n  `c_integer_1` int DEFAULT NULL,\n  `c_integer_unsigned` int UNSIGNED DEFAULT NULL,\n  `c_integer_zerofill` int(10) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_bigint` bigint DEFAULT NULL,\n  `c_bigint_1` bigint DEFAULT NULL,\n  `c_bigint_unsigned` bigint UNSIGNED DEFAULT NULL,\n  `c_bigint_zerofill` bigint(20) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_decimal` decimal(10, 0) DEFAULT NULL,\n  `c_decimal_5` decimal(5, 0) DEFAULT NULL,\n  `c_decimal_5_2` decimal(5, 2) DEFAULT NULL,\n  `c_decimal_unsigned` decimal(10, 0) UNSIGNED DEFAULT NULL,\n  `c_decimal_zerofill` decimal(10, 0) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_dec` decimal(10, 0) DEFAULT NULL,\n  `c_dec_5` decimal(5, 0) DEFAULT NULL,\n  `c_dec_5_2` decimal(5, 2) DEFAULT NULL,\n  `c_dec_unsigned` decimal(10, 0) UNSIGNED DEFAULT NULL,\n  `c_dec_zerofill` decimal(10, 0) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_numeric` decimal(10, 0) DEFAULT NULL,\n  `c_numeric_5` decimal(5, 0) DEFAULT NULL,\n  `c_numeric_5_2` decimal(5, 2) DEFAULT NULL,\n  `c_numeric_unsigned` decimal(10, 0) UNSIGNED DEFAULT NULL,\n  `c_numeric_zerofill` decimal(10, 0) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_fixed` decimal(10, 0) DEFAULT NULL,\n  `c_fixed_5` decimal(5, 0) DEFAULT NULL,\n  `c_fixed_5_2` decimal(5, 2) DEFAULT NULL,\n  `c_fixed_unsigned` decimal(10, 0) UNSIGNED DEFAULT NULL,\n  `c_fixed_zerofill` decimal(10, 0) UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_float` float DEFAULT NULL,\n  `c_float_5` float DEFAULT NULL,\n  `c_float_5_2` float(5, 2) DEFAULT NULL,\n  `c_float_unsigned` float UNSIGNED DEFAULT NULL,\n  `c_float_zerofill` float UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_double` double DEFAULT NULL,\n  `c_double_5_2` double(5, 2) DEFAULT NULL,\n  `c_double_unsigned` double UNSIGNED DEFAULT NULL,\n  `c_double_zerofill` double UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_double_precision` double DEFAULT NULL,\n  `c_double_precision_5_2` double(5, 2) DEFAULT NULL,\n  `c_double_precision_unsigned` double UNSIGNED DEFAULT NULL,\n  `c_double_precision_zerofill` double UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_real` double DEFAULT NULL,\n  `c_real_5_2` double(5, 2) DEFAULT NULL,\n  `c_real_unsigned` double UNSIGNED DEFAULT NULL,\n  `c_real_zerofill` double UNSIGNED ZEROFILL DEFAULT NULL,\n  `c_date` date DEFAULT NULL,\n  `c_datetime` datetime DEFAULT NULL,\n  `c_datetime_6` datetime(6) DEFAULT NULL,\n  `c_timestamp` timestamp NULL DEFAULT NULL,\n  `c_timestamp_6` timestamp(6) NULL DEFAULT NULL,\n  `c_time` time DEFAULT NULL,\n  `c_time_6` time(6) DEFAULT NULL,\n  `c_year` year DEFAULT NULL,\n  `c_year_4` year DEFAULT NULL,\n  `c_char` char(1) DEFAULT NULL,\n  `c_national_char` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,\n  `c_char_8` char(8) DEFAULT NULL,\n  `c_char_character_set_utf8` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,\n  `c_char_collate_utf8_bin` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin DEFAULT NULL,\n  `c_national_varchar_8` varchar(8) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,\n  `c_varchar_8` varchar(8) DEFAULT NULL,\n  `c_varchar_8_character_set_utf8` varchar(8) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,\n  `c_varchar_8_collate_utf8_bin` varchar(8) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin DEFAULT NULL,\n  `c_binary` binary(1) DEFAULT NULL,\n  `c_binary_8` binary(8) DEFAULT NULL,\n  `c_varbinary_8` varbinary(8) DEFAULT NULL,\n  `c_tinyblob` tinyblob,\n  `c_blob` blob,\n  `c_blob_8` tinyblob,\n  `c_mediumblob` mediumblob,\n  `c_longblob` longblob,\n  `c_tinytext` tinytext,\n  `c_tinytext_character_set_utf8` tinytext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,\n  `c_tinytext_collate_utf8_bin` tinytext CHARACTER SET utf8mb3 COLLATE utf8mb3_bin,\n  `c_text` text,\n  `c_text_8` tinytext,\n  `c_text_character_set_utf8` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,\n  `c_text_collate_utf8_bin` text CHARACTER SET utf8mb3 COLLATE utf8mb3_bin,\n  `c_mediumtext` mediumtext,\n  `c_mediumtext_character_set_utf8` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,\n  `c_mediumtext_collate_utf8_bin` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_bin,\n  `c_longtext` longtext,\n  `c_longtext_character_set_utf8` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,\n  `c_longtext_collate_utf8_bin` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_bin,\n  `c_enum` enum('value1', 'value2') DEFAULT NULL,\n  `c_enum_character_set_utf8` enum('value1', 'value2') CHARACTER SET (utf8mb3 COLLATE utf8mb3_general_ci) DEFAULT NULL,\n  `c_enum_collate_utf8_bin` enum('value1', 'value2') CHARACTER SET (utf8mb3 COLLATE utf8mb3_bin) DEFAULT NULL,\n  `c_set` set('value1', 'value2') DEFAULT NULL,\n  `c_set_character_set_utf8` set('value1', 'value2') CHARACTER SET (utf8mb3 COLLATE utf8mb3_general_ci) DEFAULT NULL,\n  `c_set_collate_utf8_bin` set('value1', 'value2') CHARACTER SET (utf8mb3 COLLATE utf8mb3_bin) DEFAULT NULL,\n  `c_json` json DEFAULT NULL\n) ENGINE = 'COLUMNAR@default' DEFAULT CHARSET = utf8mb4 DEFAULT COLLATE = utf8mb4_0900_ai_ci
+
+statement ok
+SHOW FILES FROM t;
+
+statement ok
+SHOW FILES FROM xyz_show.t_xyz_show;
+
+query TTTTTT nosort
+DESC t;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESC test_ddls_show.t;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESC xyz_show.t_xyz_show;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+xyz_show	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESC v;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESC test_ddls_show.v;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESC xyz_show.v_xyz_show;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+xyz_show	integer	YES	($empty$)	NULL	($empty$)
+
+
+query TTTTTT nosort
+DESCRIBE t;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESCRIBE test_ddls_show.t;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESCRIBE xyz_show.t_xyz_show;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+xyz_show	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESCRIBE v;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESCRIBE test_ddls_show.v;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+DESCRIBE xyz_show.v_xyz_show;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+xyz_show	integer	YES	($empty$)	NULL	($empty$)
+
+
+query TTTTTT nosort
+SHOW COLUMNS FROM t;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+SHOW COLUMNS FROM test_ddls_show.t;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+SHOW COLUMNS FROM xyz_show.t_xyz_show;
+----
+id	bigint	NO	PRI	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	int	YES	($empty$)	NULL	($empty$)
+xyz_show	int	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+SHOW COLUMNS FROM v;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+SHOW COLUMNS FROM test_ddls_show.v;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+
+query TTTTTT nosort
+SHOW COLUMNS FROM xyz_show.v_xyz_show;
+----
+id	bigint	YES	($empty$)	NULL	($empty$)
+s	varchar(100)	YES	($empty$)	NULL	($empty$)
+i	integer	YES	($empty$)	NULL	($empty$)
+xyz_show	integer	YES	($empty$)	NULL	($empty$)
+
+
+query TTTTTTTTT nosort
+SHOW FULL COLUMNS FROM t;
+----
+id	bigint	NULL	NO	PRI	NULL	($empty$)	select,insert,update,references	($empty$)
+s	varchar(100)	utf8mb4_0900_ai_ci	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+i	int	NULL	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+
+query TTTTTTTTT nosort
+SHOW FULL COLUMNS FROM test_ddls_show.t;
+----
+id	bigint	NULL	NO	PRI	NULL	($empty$)	select,insert,update,references	($empty$)
+s	varchar(100)	utf8mb4_0900_ai_ci	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+i	int	NULL	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+
+query TTTTTTTTT nosort
+SHOW FULL COLUMNS FROM xyz_show.t_xyz_show;
+----
+id	bigint	NULL	NO	PRI	NULL	($empty$)	select,insert,update,references	($empty$)
+s	varchar(100)	utf8mb4_0900_ai_ci	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+i	int	NULL	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+xyz_show	int	NULL	YES	($empty$)	NULL	($empty$)	select,insert,update,references	($empty$)
+
+query TTTTTTTTT nosort
+SHOW FULL COLUMNS FROM v;
+----
+id	bigint	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+s	varchar(100)	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+i	integer	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+
+query TTTTTTTTT nosort
+SHOW FULL COLUMNS FROM test_ddls_show.v;
+----
+id	bigint	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+s	varchar(100)	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+i	integer	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+
+query TTTTTTTTT nosort
+SHOW FULL COLUMNS FROM xyz_show.v_xyz_show;
+----
+id	bigint	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+s	varchar(100)	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+i	integer	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+xyz_show	integer	NULL	YES	($empty$)	NULL	($empty$)	select	($empty$)
+
+
+query TTTT nosort
+SHOW CREATE VIEW v;
+----
+v	CREATE VIEW `v` AS SELECT `t`.`id`, `t`.`s`, `t`.`i`\nFROM `t`	utf8	utf8_general_ci
+
+query TTTT nosort
+SHOW CREATE VIEW xyz_show.v_xyz_show;
+----
+v_xyz_show	CREATE VIEW `v_xyz_show` AS SELECT `t_xyz_show`.`id`, `t_xyz_show`.`s`, `t_xyz_show`.`i`, `t_xyz_show`.`xyz_show`\nFROM `xyz_show`.`t_xyz_show`	utf8	utf8_general_ci
+
+
+query TITITTIITTTTT nosort
+SHOW INDEX FROM t;
+----
+t	0	PRIMARY	1	id	A	0	NULL	NULL	($empty$)	BTREE	($empty$)	($empty$)
+
+query TITITTIITTTTT nosort
+SHOW INDEX FROM test_ddls_show.t;
+----
+t	0	PRIMARY	1	id	A	0	NULL	NULL	($empty$)	BTREE	($empty$)	($empty$)
+
+query TITITTIITTTTT nosort
+SHOW INDEX FROM xyz_show.t_xyz_show;
+----
+t_xyz_show	0	PRIMARY	1	id	A	0	NULL	NULL	($empty$)	BTREE	($empty$)	($empty$)
+
+
+statement ok
+SHOW DDL STATUS;
+
+statement ok
+SHOW DDL 1; # SHOW [FULL] DDL [<job_id> [, job_id] ...]
+
+statement ok
+SHOW DDL RESULT 1; # SHOW DDL RESULT [ ALL | <job_id> [ , <job_id> ] ... ]
+
+statement ok
+SHOW SCHEDULE RESULT 1; # SHOW SCHEDULE RESULT [ ALL | <job_id> [ , <job_id> ] ... ]
+
+statement ok
+DROP DATABASE IF EXISTS xyz_show;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_show;

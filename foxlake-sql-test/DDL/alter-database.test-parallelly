@@ -1,0 +1,67 @@
+statement ok
+DROP DATABASE IF EXISTS abc_alter_database;
+
+statement ok
+CREATE DATABASE abc_alter_database;
+
+statement ok
+USE abc_alter_database;
+
+
+statement ok
+ALTER SCHEMA CHARACTER SET = utf8mb4;
+
+statement ok
+ALTER DATABASE CHARACTER SET = utf8mb4;
+
+
+statement ok
+ALTER SCHEMA abc_alter_database CHARACTER SET = utf8;
+
+statement ok
+ALTER DATABASE abc_alter_database CHARACTER SET = utf8;
+
+statement ok
+ALTER DATABASE abc_alter_database DEFAULT CHARACTER SET = utf8;
+
+
+statement ok
+ALTER SCHEMA abc_alter_database COLLATE = utf8_bin;
+
+statement ok
+ALTER DATABASE abc_alter_database COLLATE = utf8_bin;
+
+statement ok
+ALTER DATABASE abc_alter_database DEFAULT COLLATE = utf8_bin;
+
+
+statement ok
+ALTER SCHEMA abc_alter_database ENCRYPTION = 'Y';
+
+statement ok
+ALTER DATABASE abc_alter_database ENCRYPTION = 'Y';
+
+statement ok
+ALTER DATABASE abc_alter_database ENCRYPTION = 'N';
+
+statement ok
+ALTER DATABASE abc_alter_database DEFAULT ENCRYPTION = 'Y';
+
+statement ok
+ALTER DATABASE abc_alter_database DEFAULT ENCRYPTION = 'N';
+
+
+statement ok
+ALTER SCHEMA abc_alter_database READ ONLY = DEFAULT;
+
+statement ok
+ALTER DATABASE abc_alter_database READ ONLY = DEFAULT;
+
+statement ok
+ALTER DATABASE abc_alter_database READ ONLY = 1;
+
+statement ok
+ALTER DATABASE abc_alter_database READ ONLY = 0;
+
+statement ok
+DROP DATABASE IF EXISTS abc_alter_database;

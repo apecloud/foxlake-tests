@@ -1,0 +1,62 @@
+# Use the customer table from TPCH-SF1 to test the basic functionality of sketches.
+
+statement ok
+DROP DATABASE IF EXISTS test_sketch_customer;
+
+statement ok
+CREATE DATABASE test_sketch_customer;
+
+statement ok
+USE test_sketch_customer;
+
+statement ok
+CREATE TABLE IF NOT EXISTS `customer` (
+  `c_custkey` bigint(11) NOT NULL,
+  `c_name` varchar(25) NOT NULL,
+  `c_address` varchar(40) NOT NULL,
+  `c_nationkey` int(11) NOT NULL,
+  `c_phone` varchar(15) NOT NULL,
+  `c_acctbal` decimal(15,2) NOT NULL,
+  `c_mktsegment` varchar(10) NOT NULL,
+  `c_comment` varchar(117) NOT NULL,
+  PRIMARY KEY (`c_custkey`)
+);
+
+statement ok
+COPY INTO customer FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/customer/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from customer;
+----
+150000
+
+query II nosort
+select cpc_est(load_sketch(load_sketch_root("customer"), "cpc", "c_nationkey")), count(distinct c_nationkey) from customer;
+----
+25	25
+
+query II nosort
+select cpc_est(load_sketch(load_sketch_root("customer"), "cpc", "c_nationkey")), count(distinct c_nationkey) from customer;
+----
+25	25
+
+query II nosort
+select cpc_est(load_sketch(load_sketch_root("customer"), "cpc", "c_name")), count(distinct c_name) from customer;
+----
+149535	150000
+
+query I nosort
+select kll_quantile(load_sketch(load_sketch_root("customer"), "kll", "c_custkey"), 0.1) between 0.05 * 150000 and 0.15 * 150000 as PASS;
+----
+1
+
+query I nosort
+select kll_quantile(load_sketch(load_sketch_root("customer"), "kll", "c_custkey"), 0.5) between 0.45 * 150000 and 0.55 * 150000 as PASS;
+----
+1
+
+statement ok
+drop database test_sketch_customer;

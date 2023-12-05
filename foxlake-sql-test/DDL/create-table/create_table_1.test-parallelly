@@ -1,0 +1,241 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_1;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_1;
+
+statement ok
+USE test_ddls_create_table_1;
+
+
+# ================= LIKE ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (id bigint);
+
+statement ok
+create table t like tt;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (id bigint);
+
+statement ok
+create table t (like tt);
+
+
+
+########################## ============== create_definition ============== ##########################
+
+
+# ================= INDEX/KEY ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, index id_k (id));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, key id_k (id));
+
+
+
+# ================= FULLTEXT/SPATIAL ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, fulltext (s));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, fulltext id_k (s));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, fulltext key id_k (s));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, g GEOMETRY NOT NULL, SPATIAL id_k (g));
+
+
+# ================= CONSTRAINT ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint, s varchar(100), i int, constraint abc unique key (id));
+
+
+# ================= FOREIGN KEY ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (id bigint, s varchar(100), i int, foreign key (id) references tt (tt_id));
+
+
+
+########################## ============== column_definition ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint NOT NULL DEFAULT 1);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint DEFAULT (2 * 3));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint VISIBLE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint INVISIBLE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint AUTO_INCREMENT KEY);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint AUTO_INCREMENT UNIQUE KEY);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint AUTO_INCREMENT PRIMARY KEY);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (id bigint COMMENT 'This is a column.');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (s varchar(100) COLLATE 'utf8_bin');
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (s varchar(100) COLUMN_FORMAT FIXED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (s varchar(100) COLUMN_FORMAT DYNAMIC);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (s varchar(100) COLUMN_FORMAT DEFAULT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (s varchar(100) STORAGE DISK);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (s varchar(100) STORAGE MEMORY);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table if not exists tt (tt_id bigint, key (tt_id));
+
+statement ok
+create table t (s varchar(100) references tt (tt_id));
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_1;

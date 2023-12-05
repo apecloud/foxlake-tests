@@ -1,0 +1,200 @@
+statement ok
+DROP DATABASE IF EXISTS test_join;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS test_join;
+
+statement ok
+USE test_join;
+
+statement ok
+CREATE TABLE t1 (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE t2 (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE t3 (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE t4 (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+statement ok
+INSERT INTO t1 VALUES (1, 'a1', 11), (2, 'b1', 21), (3, 'c1', 31), (4, 'd1', 41), (5, 'e1', 51);
+
+statement ok
+INSERT INTO t2 VALUES (1, 'a2', 12), (2, 'b2', 22), (3, 'c2', 32), (4, 'd2', 42), (5, 'e2', 52);
+
+statement ok
+INSERT INTO t3 VALUES (1, 'a3', 13), (3, 'b3', 23), (5, 'c3', 33), (7, 'd3', 43), (9, 'e3', 53);
+
+statement ok
+INSERT INTO t4 VALUES (2, 'a4', 14), (4, 'b4', 24), (6, 'c4', 34), (8, 'd4', 44), (10, 'e4', 54);
+
+query ITI nosort
+SELECT * FROM t1 ORDER BY id;
+----
+1	a1	11
+2	b1	21
+3	c1	31
+4	d1	41
+5	e1	51
+
+query ITI nosort
+SELECT * FROM t2 ORDER BY id;
+----
+1	a2	12
+2	b2	22
+3	c2	32
+4	d2	42
+5	e2	52
+
+query ITI nosort
+SELECT * FROM t3 ORDER BY id;
+----
+1	a3	13
+3	b3	23
+5	c3	33
+7	d3	43
+9	e3	53
+
+query ITI nosort
+SELECT * FROM t4 ORDER BY id;
+----
+2	a4	14
+4	b4	24
+6	c4	34
+8	d4	44
+10	e4	54
+
+query T nosort
+EXPLAIN SELECT * FROM t1 INNER JOIN t2 ON t1.id = t2. id ORDER BY t1.id;
+----
+Exchange(distribution=single, collation=[0 ASC-nulls-first])
+  HashJoin(condition="id = id", type="inner")
+    MemSort(sort="id ASC")
+      Exchange(distribution=broadcast, collation=[])
+        TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t1", sql="SELECT `id`, `s`, `i` FROM `t1`")
+    TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t2", sql="SELECT `id`, `s`, `i` FROM `t2`")
+($empty$)
+
+
+query ITIITI nosort
+SELECT * FROM t1 INNER JOIN t2 ON t1.id = t2. id ORDER BY t1.id;
+----
+1	a1	11	1	a2	12
+2	b1	21	2	b2	22
+3	c1	31	3	c2	32
+4	d1	41	4	d2	42
+5	e1	51	5	e2	52
+
+query T nosort
+EXPLAIN SELECT * FROM t1 LEFT JOIN t3 ON t1.id = t3. id ORDER BY t1.id;
+----
+Exchange(distribution=single, collation=[0 ASC-nulls-first])
+  HashJoin(condition="id = id", type="left")
+    MemSort(sort="id ASC")
+      TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t1", sql="SELECT `id`, `s`, `i` FROM `t1`")
+    Exchange(distribution=broadcast, collation=[])
+      TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t3", sql="SELECT `id`, `s`, `i` FROM `t3`")
+($empty$)
+
+query ITIITI nosort
+SELECT * FROM t1 LEFT JOIN t3 ON t1.id = t3. id ORDER BY t1.id;
+----
+1	a1	11	1	a3	13
+2	b1	21	NULL	NULL	NULL
+3	c1	31	3	b3	23
+4	d1	41	NULL	NULL	NULL
+5	e1	51	5	c3	33
+
+query T nosort
+EXPLAIN SELECT * FROM t2 RIGHT JOIN t4 ON t2.id = t4. id ORDER BY t4.id;
+----
+Project(id="id0", s="s0", i="i0", id0="id", s0="s", i0="i")
+  Exchange(distribution=single, collation=[0 ASC-nulls-first])
+    HashJoin(condition="id = id", type="left")
+      MemSort(sort="id ASC")
+        TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t4", sql="SELECT `id`, `s`, `i` FROM `t4`")
+      Exchange(distribution=broadcast, collation=[])
+        TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t2", sql="SELECT `id`, `s`, `i` FROM `t2`")
+($empty$)
+
+query ITIITI nosort
+SELECT * FROM t2 RIGHT JOIN t4 ON t2.id = t4. id ORDER BY t4.id;
+----
+2	b2	22	2	a4	14
+4	d2	42	4	b4	24
+NULL	NULL	NULL	6	c4	34
+NULL	NULL	NULL	8	d4	44
+NULL	NULL	NULL	10	e4	54
+
+query T nosort
+EXPLAIN SELECT * FROM t1 FULL JOIN t3 ON t1.id = t3. id ORDER BY t1.id;
+----
+Exchange(distribution=single, collation=[0 ASC-nulls-first])
+  MemSort(sort="id ASC")
+    HashJoin(condition="id = id", type="full")
+      Exchange(distribution=hash[0], collation=[])
+        TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t1", sql="SELECT `id`, `s`, `i` FROM `t1`")
+      Exchange(distribution=hash[0], collation=[])
+        TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t3", sql="SELECT `id`, `s`, `i` FROM `t3`")
+($empty$)
+
+query ITIITI nosort
+SELECT * FROM t1 FULL JOIN t3 ON t1.id = t3. id ORDER BY t1.id;
+----
+NULL	NULL	NULL	7	d3	43
+NULL	NULL	NULL	9	e3	53
+1	a1	11	1	a3	13
+2	b1	21	NULL	NULL	NULL
+3	c1	31	3	b3	23
+4	d1	41	NULL	NULL	NULL
+5	e1	51	5	c3	33
+
+query T nosort
+EXPLAIN SELECT * FROM t1, t2, t3, t4 WHERE t1.id = t2.id AND MOD(t2.id * t2.i, 5) = t3.id AND t1.id = MOD(t4.id * t4.i, 5) AND t1.id > 3 AND t2.id < 6;
+----
+Project(id="id0", s="s0", i="i0", id0="id00", s0="s00", i0="i00", id1="id000", s1="s000", i1="i000", id2="id", s2="s", i2="i")
+  HashJoin(condition="id = MOD", type="inner")
+    Project(id="id", s="s", i="i", MOD="MOD(id * i, ?1)")
+      TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t4", sql="SELECT `id`, `s`, `i` FROM `t4`")
+    Exchange(distribution=broadcast, collation=[])
+      HashJoin(condition="MOD(id * i, ?0) = id0 AND id = id", type="inner")
+        Exchange(distribution=broadcast, collation=[])
+          TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t1", sql="SELECT * FROM (SELECT `id`, `s`, `i` FROM `t1`) AS `t` WHERE ((`id` > ?) AND (`id` < ?))")
+        Project(id="id0", s="s0", i="i0", id0="id", s0="s", i0="i")
+          HashJoin(condition="MOD(id * i, ?0) = id", type="inner")
+            TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t3", sql="SELECT `id`, `s`, `i` FROM `t3`")
+            Exchange(distribution=broadcast, collation=[])
+              TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t2", sql="SELECT * FROM (SELECT `id`, `s`, `i` FROM `t2`) AS `t` WHERE ((`id` < ?) AND (`id` > ?))")
+($empty$)
+
+query ITIITIITIITI nosort
+SELECT * FROM t1, t2, t3, t4 WHERE t1.id = t2.id AND MOD(t2.id * t2.i, 5) = t3.id AND t1.id = MOD(t4.id * t4.i, 5) AND t1.id > 3 AND t2.id < 6;
+----
+4	d1	41	4	d2	42	3	b3	23	6	c4	34
+
+query T nosort
+EXPLAIN SELECT * FROM t1 INNER JOIN t3 ON t1.id > t3.id ORDER BY t1.id;
+----
+NlJoin(condition="id > id", type="inner")
+  Exchange(distribution=single, collation=[0 ASC-nulls-first])
+    MemSort(sort="id ASC")
+      TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t1", sql="SELECT `id`, `s`, `i` FROM `t1`")
+  Exchange(distribution=single, collation=[])
+    TableFileScan(tables="TEST_JOIN_SINGLE_GROUP.t3", sql="SELECT `id`, `s`, `i` FROM `t3`")
+($empty$)
+
+query ITIITI nosort
+SELECT * FROM t1 INNER JOIN t3 ON t1.id > t3.id ORDER BY t1.id;
+----
+2	b1	21	1	a3	13
+3	c1	31	1	a3	13
+4	d1	41	1	a3	13
+4	d1	41	3	b3	23
+5	e1	51	1	a3	13
+5	e1	51	3	b3	23
+
+statement ok
+DROP DATABASE IF EXISTS test_join;

@@ -1,0 +1,124 @@
+statement ok
+DROP DATABASE IF EXISTS xyz_create_view;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS xyz_create_view;
+
+statement ok
+USE xyz_create_view;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_view;
+
+statement ok
+CREATE DATABASE test_ddls_create_view;
+
+statement ok
+USE test_ddls_create_view;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE IF NOT EXISTS xyz_create_view.t (id BIGINT, s VARCHAR(100), i INT);
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS xyz_create_view.v;
+
+statement ok
+CREATE VIEW xyz_create_view.v AS select * from xyz_create_view.t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE ALGORITHM = UNDEFINED VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE ALGORITHM = MERGE VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE ALGORITHM = TEMPTABLE VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE DEFINER = root VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE SQL SECURITY DEFINER VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE SQL SECURITY INVOKER VIEW v AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE VIEW v (c1, c2, c3) AS select * from t;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE VIEW v AS select * from t WITH CHECK OPTION;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE VIEW v AS select * from t WITH CASCADED CHECK OPTION;
+
+
+statement ok
+DROP VIEW IF EXISTS v;
+
+statement ok
+CREATE VIEW v AS select * from t WITH LOCAL CHECK OPTION;
+
+statement ok
+DROP DATABASE IF EXISTS xyz_create_view;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_view;

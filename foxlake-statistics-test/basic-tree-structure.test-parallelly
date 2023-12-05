@@ -1,0 +1,1113 @@
+# This test generates a small table and verify its sketches contents/structure by applying
+# DMLs.
+
+statement ok
+DROP DATABASE IF EXISTS test_structure;
+
+statement ok
+CREATE DATABASE test_structure;
+
+statement ok
+USE test_structure;
+
+statement ok
+CREATE TABLE IF NOT EXISTS `test` (
+  `id` bigint(5) NOT NULL,
+  `name` varchar(25) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+# insert 10 rows incrementally, every insertion creates a new data file and sketch leaf node
+statement ok
+insert into test values (1, "a"), (2, "a"), (3, "a");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+1	0
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+
+statement ok
+insert into test values (4, "b"), (5, "b");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+1	0
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+
+statement ok
+insert into test values (6, "c");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+insert into test values (7, "d");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+insert into test values (8, "e");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+3	0
+2	4
+2	0
+1	4
+1	2
+1	0
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+2	0	OK
+2	4	OK
+3	0	OK
+
+statement ok
+insert into test values (9, "f");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+3	0
+2	4
+2	0
+1	4
+1	2
+1	0
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+2	0	OK
+2	4	OK
+3	0	OK
+
+statement ok
+insert into test values (10, "g");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+3	0
+2	4
+2	0
+1	6
+1	4
+1	2
+1	0
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+2	0	OK
+2	4	OK
+3	0	OK
+
+query I nosort
+select count(*) from test;
+----
+10
+
+# after inserting 10 rows, verify the correctness of sketches
+query II nosort
+select cpc_est(load_sketch(load_sketch_root("test"), "cpc", "id")), count(distinct id) from test;
+----
+10	10
+
+query II nosort
+select cpc_est(load_sketch(load_sketch_root("test"), "cpc", "name")), count(distinct name) from test;
+----
+7	7
+
+query T nosort
+select kll_quantile(load_sketch(load_sketch_root("test"), "kll", "id"), 0.1);
+----
+1
+
+query T nosort
+select kll_quantile(load_sketch(load_sketch_root("test"), "kll", "id"), 0.5);
+----
+5
+
+statement ok
+insert into test values (11, "h");
+
+statement ok
+insert into test values (12, "j"), (13, "k");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+4	0
+3	8
+3	0
+2	8
+2	4
+2	0
+1	8
+1	6
+1	4
+1	2
+1	0
+0	8
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+1	8	OK
+2	0	OK
+2	4	OK
+2	8	OK
+3	0	OK
+3	8	OK
+4	0	OK
+
+statement ok
+delete from test where id = 12;
+
+# After deleting one row of in the leaf node (0, 7), there is still one row in it.
+# So this leaf node will not be removed.
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+4	0
+3	8
+3	0
+2	8
+2	4
+2	0
+1	8
+1	6
+1	4
+1	2
+1	0
+0	8
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+1	8	OK
+2	0	OK
+2	4	OK
+2	8	OK
+3	0	OK
+3	8	OK
+4	0	OK
+
+statement ok
+delete from test where id = 13;
+
+# After deleting one more row of in the leaf node (0, 7), there is no row in it.
+# So this leaf node is removed, so as the non-leaf nodes that reference it.
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+3	0
+2	4
+2	0
+1	6
+1	4
+1	2
+1	0
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+2	0	OK
+2	4	OK
+3	0	OK
+
+statement ok
+insert into test values (12, "j"), (13, "k");
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+4	0
+3	8
+3	0
+2	8
+2	4
+2	0
+1	8
+1	6
+1	4
+1	2
+1	0
+0	8
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+1	8	OK
+2	0	OK
+2	4	OK
+2	8	OK
+3	0	OK
+3	8	OK
+4	0	OK
+
+statement ok
+update test set name = "foo" where id = 12;
+
+# Updating one row in the leaf node (0, 7), the updated row will be deleted from the leaf node (0, 7).
+# But there is still one row in it, so this leaf node will not be removed. The updated row will
+# produce a new leaf node (0, 9).
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+4	0
+3	8
+3	0
+2	8
+2	4
+2	0
+1	8
+1	6
+1	4
+1	2
+1	0
+0	9
+0	8
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+1	8	OK
+2	0	OK
+2	4	OK
+2	8	OK
+3	0	OK
+3	8	OK
+4	0	OK
+
+statement ok
+update test set name = "bar" where id = 13;
+
+# Update one more row in the leaf node (0, 7), the updated row will be deleted from the leaf node (0, 7).
+# So the leaf node (0, 7) will be removed, because no rows in it. The updated row will reuse the the
+# leaf node (0, 8).
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+4	0
+3	8
+3	0
+2	8
+2	4
+2	0
+1	8
+1	6
+1	4
+1	2
+1	0
+0	9
+0	8
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+1	6	OK
+1	8	OK
+2	0	OK
+2	4	OK
+2	8	OK
+3	0	OK
+3	8	OK
+4	0	OK
+
+# truncate the table, all the sketches should be re-written as empty
+statement ok
+delete from test where id > 0;
+
+query IIT nosort
+select sketch_idx, node_level, stat_blob_key from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+
+statement ok
+insert into test values (1, "a");
+
+statement ok
+insert into test values (2, "a");
+
+statement ok
+insert into test values (3, "a");
+
+statement ok
+insert into test values (4, "a");
+
+statement ok
+delete from test where id in (1, 3);
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	1
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+# Set ORC_MAX_ROWS_PER_FILE and CHUNK_SIZE to 1 to make sure every value in the insertion
+# creates a new data file and sketch leaf node.
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=1, CHUNK_SIZE=1;
+
+statement ok
+insert into test values (1, "a"), (3, "a");
+
+# The new leaf nodes reuse all of the positions of the already deleted leaf nodes.
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+delete from test where id in (1, 3);
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	1
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+insert into test values (3, "a");
+
+# The new leaf node reuses the position of the leftmost deleted leaf node.
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+delete from test where id in (3);
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	1
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+insert into test values (1, "a"), (3, "a"), (5, "a");
+
+# The new leaf nodes reuse all of the positions of the already deleted leaf nodes.
+# And the rest of new leaf nodes will be added to the rightmost of the sketch tree.
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+3	0
+2	4
+2	0
+1	4
+1	2
+1	0
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+2	0	OK
+2	4	OK
+3	0	OK
+
+statement ok
+delete from test where id in (1, 2, 3, 5);
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+0	3
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	2	OK
+2	0	OK
+
+# Restore the default value of ORC_MAX_ROWS_PER_FILE and CHUNK_SIZE.
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=800000, CHUNK_SIZE=5000;
+
+statement ok
+insert into test values (1, "a");
+
+statement ok
+insert into test values (2, "a"), (2, "a");
+
+# The leaf node (0, 1) has two rows.
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=1, CHUNK_SIZE=1;
+
+statement ok
+update test set name = "x" where id = 1;
+
+# This will reuse the node 0	0
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+update test set name = "y" where id = 2;
+
+# This will reuse the node (0, 1) and create a new node (0, 2)
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+2	0
+1	2
+1	0
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+2	0	OK
+
+statement ok
+delete from test where id in (2);
+
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=800000, CHUNK_SIZE=5000;
+
+statement ok
+insert into test values (2, "a"), (2, "a"), (2, "a");
+
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=1, CHUNK_SIZE=1;
+
+statement ok
+update test set name = "y" where id = 2;
+
+# This will reuse the node (0, 1) and create a new node (0, 2), (0, 4)
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+3	0
+2	4
+2	0
+1	4
+1	2
+1	0
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+1	0	OK
+1	2	OK
+1	4	OK
+2	0	OK
+2	4	OK
+3	0	OK
+
+statement ok
+truncate table test;
+
+query II nosort
+select sketch_idx, node_level from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=1, CHUNK_SIZE=1, CSV_RECORDS_BATCH_SIZE=1;
+
+# copy data from a file
+statement ok
+COPY INTO test
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/sketch-tree-testing/257_rows.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER=',');
+
+statement ok
+SET ORC_MAX_ROWS_PER_FILE=800000, CHUNK_SIZE=5000, CSV_RECORDS_BATCH_SIZE=5000;
+
+query II nosort
+select node_level, sketch_idx from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+12	0
+8	256
+8	0
+4	256
+4	240
+4	224
+4	208
+4	192
+4	176
+4	160
+4	144
+4	128
+4	112
+4	96
+4	80
+4	64
+4	48
+4	32
+4	16
+4	0
+0	256
+0	255
+0	254
+0	253
+0	252
+0	251
+0	250
+0	249
+0	248
+0	247
+0	246
+0	245
+0	244
+0	243
+0	242
+0	241
+0	240
+0	239
+0	238
+0	237
+0	236
+0	235
+0	234
+0	233
+0	232
+0	231
+0	230
+0	229
+0	228
+0	227
+0	226
+0	225
+0	224
+0	223
+0	222
+0	221
+0	220
+0	219
+0	218
+0	217
+0	216
+0	215
+0	214
+0	213
+0	212
+0	211
+0	210
+0	209
+0	208
+0	207
+0	206
+0	205
+0	204
+0	203
+0	202
+0	201
+0	200
+0	199
+0	198
+0	197
+0	196
+0	195
+0	194
+0	193
+0	192
+0	191
+0	190
+0	189
+0	188
+0	187
+0	186
+0	185
+0	184
+0	183
+0	182
+0	181
+0	180
+0	179
+0	178
+0	177
+0	176
+0	175
+0	174
+0	173
+0	172
+0	171
+0	170
+0	169
+0	168
+0	167
+0	166
+0	165
+0	164
+0	163
+0	162
+0	161
+0	160
+0	159
+0	158
+0	157
+0	156
+0	155
+0	154
+0	153
+0	152
+0	151
+0	150
+0	149
+0	148
+0	147
+0	146
+0	145
+0	144
+0	143
+0	142
+0	141
+0	140
+0	139
+0	138
+0	137
+0	136
+0	135
+0	134
+0	133
+0	132
+0	131
+0	130
+0	129
+0	128
+0	127
+0	126
+0	125
+0	124
+0	123
+0	122
+0	121
+0	120
+0	119
+0	118
+0	117
+0	116
+0	115
+0	114
+0	113
+0	112
+0	111
+0	110
+0	109
+0	108
+0	107
+0	106
+0	105
+0	104
+0	103
+0	102
+0	101
+0	100
+0	99
+0	98
+0	97
+0	96
+0	95
+0	94
+0	93
+0	92
+0	91
+0	90
+0	89
+0	88
+0	87
+0	86
+0	85
+0	84
+0	83
+0	82
+0	81
+0	80
+0	79
+0	78
+0	77
+0	76
+0	75
+0	74
+0	73
+0	72
+0	71
+0	70
+0	69
+0	68
+0	67
+0	66
+0	65
+0	64
+0	63
+0	62
+0	61
+0	60
+0	59
+0	58
+0	57
+0	56
+0	55
+0	54
+0	53
+0	52
+0	51
+0	50
+0	49
+0	48
+0	47
+0	46
+0	45
+0	44
+0	43
+0	42
+0	41
+0	40
+0	39
+0	38
+0	37
+0	36
+0	35
+0	34
+0	33
+0	32
+0	31
+0	30
+0	29
+0	28
+0	27
+0	26
+0	25
+0	24
+0	23
+0	22
+0	21
+0	20
+0	19
+0	18
+0	17
+0	16
+0	15
+0	14
+0	13
+0	12
+0	11
+0	10
+0	9
+0	8
+0	7
+0	6
+0	5
+0	4
+0	3
+0	2
+0	1
+0	0
+
+query IIT nosort
+verify sketch_tree of test_structure.test;
+----
+4	0	OK
+4	16	OK
+4	32	OK
+4	48	OK
+4	64	OK
+4	80	OK
+4	96	OK
+4	112	OK
+4	128	OK
+4	144	OK
+4	160	OK
+4	176	OK
+4	192	OK
+4	208	OK
+4	224	OK
+4	240	OK
+4	256	OK
+8	0	OK
+8	256	OK
+12	0	OK
+
+# drop the table, all the sketches should be removed
+statement ok
+drop table test;
+
+query II nosort
+select sketch_idx, node_level from information_schema.sketch_tree_structures
+where schema_name = "test_structure" and table_name = "test";
+----
+
+statement ok
+drop database test_structure;

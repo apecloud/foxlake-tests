@@ -1,0 +1,214 @@
+# Generate the tpch sf1 data to be csv files and upload them
+# to your bucket.
+# You can follow the instructions described in 'README' under this directory to generate the data.
+# 
+# The data csv files should be put in this path: <your bucket>/tpch/SF1/<table name>/
+# e.g.
+# csv files for customer should be put on <your bucket>/tpch/SF1/customer/
+
+statement ok
+DROP DATABASE IF EXISTS tpch_sf1;
+
+statement ok
+CREATE DATABASE tpch_sf1;
+
+statement ok
+USE tpch_sf1;
+
+statement ok
+CREATE TABLE IF NOT EXISTS `customer` (
+  `c_custkey` bigint(11) NOT NULL,
+  `c_name` varchar(25) NOT NULL,
+  `c_address` varchar(40) NOT NULL,
+  `c_nationkey` int(11) NOT NULL,
+  `c_phone` varchar(15) NOT NULL,
+  `c_acctbal` decimal(15,2) NOT NULL,
+  `c_mktsegment` varchar(10) NOT NULL,
+  `c_comment` varchar(117) NOT NULL,
+  PRIMARY KEY (`c_custkey`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `lineitem` (
+  `l_orderkey` bigint(11) NOT NULL,
+  `l_partkey` int(11) NOT NULL,
+  `l_suppkey` int(11) NOT NULL,
+  `l_linenumber` int(11) NOT NULL,
+  `l_quantity` decimal(15,2) NOT NULL,
+  `l_extendedprice` decimal(15,2) NOT NULL,
+  `l_discount` decimal(15,2) NOT NULL,
+  `l_tax` decimal(15,2) NOT NULL,
+  `l_returnflag` varchar(1) NOT NULL,
+  `l_linestatus` varchar(1) NOT NULL,
+  `l_shipdate` date NOT NULL,
+  `l_commitdate` date NOT NULL,
+  `l_receiptdate` date NOT NULL,
+  `l_shipinstruct` varchar(25) NOT NULL,
+  `l_shipmode` varchar(10) NOT NULL,
+  `l_comment` varchar(44) NOT NULL,
+  PRIMARY KEY (`l_shipdate`,`l_orderkey`,`l_linenumber`),
+  KEY `i_l_partkey` (`l_partkey`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `nation` (
+  `n_nationkey` bigint(11) NOT NULL,
+  `n_name` varchar(25) NOT NULL,
+  `n_regionkey` int(11) NOT NULL,
+  `n_comment` varchar(152) DEFAULT NULL,
+  PRIMARY KEY (`n_nationkey`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `orders` (
+  `o_orderkey` bigint(11) NOT NULL,
+  `o_custkey` int(11) NOT NULL,
+  `o_orderstatus` varchar(1) NOT NULL,
+  `o_totalprice` decimal(15,2) NOT NULL,
+  `o_orderdate` date NOT NULL,
+  `o_orderpriority` varchar(15) NOT NULL,
+  `o_clerk` varchar(15) NOT NULL,
+  `o_shippriority` int(11) NOT NULL,
+  `o_comment` varchar(79) NOT NULL,
+  PRIMARY KEY (`o_orderdate`,`o_orderkey`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `part` (
+  `p_partkey` bigint(11) NOT NULL,
+  `p_name` varchar(55) NOT NULL,
+  `p_mfgr` varchar(25) NOT NULL,
+  `p_brand` varchar(10) NOT NULL,
+  `p_type` varchar(25) NOT NULL,
+  `p_size` int(11) NOT NULL,
+  `p_container` varchar(10) NOT NULL,
+  `p_retailprice` decimal(15,2) NOT NULL,
+  `p_comment` varchar(23) NOT NULL,
+  PRIMARY KEY (`p_partkey`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `partsupp` (
+  `ps_partkey` bigint(11) NOT NULL,
+  `ps_suppkey` int(11) NOT NULL,
+  `ps_availqty` int(11) NOT NULL,
+  `ps_supplycost` decimal(15,2) NOT NULL,
+  `ps_comment` varchar(199) NOT NULL,
+  PRIMARY KEY (`ps_partkey`,`ps_suppkey`),
+  KEY `IDX_PARTSUPP_SUPPKEY` (`PS_SUPPKEY`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `region` (
+  `r_regionkey` bigint(11) NOT NULL,
+  `r_name` varchar(25) NOT NULL,
+  `r_comment` varchar(152) DEFAULT NULL,
+  PRIMARY KEY (`r_regionkey`)
+);
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS `supplier` (
+  `s_suppkey` bigint(11) NOT NULL,
+  `s_name` varchar(25) NOT NULL,
+  `s_address` varchar(40) NOT NULL,
+  `s_nationkey` int(11) NOT NULL,
+  `s_phone` varchar(15) NOT NULL,
+  `s_acctbal` decimal(15,2) NOT NULL,
+  `s_comment` varchar(101) NOT NULL,
+  PRIMARY KEY (`s_suppkey`)
+);
+
+statement ok
+COPY INTO lineitem FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/lineitem/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from lineitem;
+----
+6001215
+
+statement ok
+COPY INTO orders FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/orders/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from orders;
+----
+1500000
+
+statement ok
+COPY INTO customer FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/customer/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from customer;
+----
+150000
+
+statement ok
+COPY INTO nation FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/nation/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from nation;
+----
+25
+
+statement ok
+COPY INTO part FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/part/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from part;
+----
+200000
+
+statement ok
+COPY INTO partsupp FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/partsupp/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from partsupp;
+----
+800000
+
+statement ok
+COPY INTO region FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/region/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from region;
+----
+5
+
+statement ok
+COPY INTO supplier FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/tpch/SF1/supplier/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') 
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', RECORD_DELIMITER='|\n');
+
+query I nosort
+select count(*) from supplier;
+----
+10000

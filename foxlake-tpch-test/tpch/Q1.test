@@ -1,0 +1,28 @@
+statement ok
+USE tpch_sf1
+
+hash-threshold 100
+
+query TTRRRRRRRI nosort
+SELECT
+    l_returnflag,
+    l_linestatus,
+    SUM(l_quantity) AS sum_qty,
+    SUM(l_extendedprice) AS sum_base_price,
+    SUM(l_extendedprice * (1 - l_discount)) AS sum_disc_price,
+    SUM(l_extendedprice * (1 - l_discount) * (1 + l_tax)) AS sum_charge,
+    AVG(l_quantity) AS avg_qty,
+    AVG(l_extendedprice) AS avg_price,
+    AVG(l_discount) AS avg_disc,
+    COUNT(*) AS count_order
+FROM
+    LINEITEM
+WHERE
+    l_shipdate <= DATE '1998-12-01' - INTERVAL '90' DAY
+GROUP BY l_returnflag , l_linestatus
+ORDER BY l_returnflag , l_linestatus;
+----
+A	F	37734107.00	56586554400.73	53758257134.870000000	55909065222.827692000	25.5220	38273.1297	0.0500	1478493
+N	F	991417.00	1487504710.38	1413082168.054100000	1469649223.194375000	25.5165	38284.4678	0.0501	38854
+N	O	74476040.00	111701729697.74	106118230307.605600000	110367043872.497010000	25.5022	38249.1180	0.0500	2920374
+R	F	37719753.00	56568041380.90	53741292684.604000000	55889619119.831932000	25.5058	38250.8546	0.0500	1478870

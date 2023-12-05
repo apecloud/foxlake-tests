@@ -1,0 +1,28 @@
+statement ok
+DROP DATABASE IF EXISTS schema_changed_query;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS schema_changed_query;
+
+statement ok
+USE schema_changed_query;
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t(a int primary key, b int);
+
+statement ok
+insert into t values(1, 100);
+
+statement ok
+alter table t modify column b varchar(10);
+
+query T rowsort
+select b from t;
+----
+100
+
+statement ok
+DROP DATABASE IF EXISTS schema_changed_query;

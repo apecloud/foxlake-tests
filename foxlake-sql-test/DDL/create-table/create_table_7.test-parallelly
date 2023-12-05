@@ -1,0 +1,348 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_7;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_7;
+
+statement ok
+USE test_ddls_create_table_7;
+
+
+########################## ============== table_option ============== ##########################
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) AUTOEXTEND_SIZE = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint primary key auto_increment, s varchar(100), i int) AUTO_INCREMENT = 10;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) AVG_ROW_LENGTH = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) CHARACTER SET = UTF8;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) DEFAULT CHARACTER SET = UTF8;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) CHECKSUM = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) CHECKSUM = 1;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) COLLATE = UTF8_BIN;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) DEFAULT COLLATE = UTF8_BIN;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) COMMENT = 'This is a table.';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) COMPRESSION = 'ZLIB';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) COMPRESSION = 'LZ4';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) COMPRESSION = 'NONE';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) CONNECTION = 'mysql://root:password@127.0.0.1:3306/test/test';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) DATA DIRECTORY = '/';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ENGINE = MyISAM INDEX DIRECTORY = '/';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) DELAY_KEY_WRITE = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) DELAY_KEY_WRITE = 1;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int, primary key (c)) ENCRYPTION = 'Y';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ENCRYPTION = 'N';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ENGINE = 'columnar@default';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) INSERT_METHOD = NO;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) INSERT_METHOD = FIRST;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) INSERT_METHOD = LAST;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) KEY_BLOCK_SIZE = 16;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) MAX_ROWS = 1024000;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) MIN_ROWS = 1024000;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) PACK_KEYS = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) PACK_KEYS = 1;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) PACK_KEYS = DEFAULT;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) PASSWORD = 'password';
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ROW_FORMAT = DEFAULT;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ROW_FORMAT = DYNAMIC;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ENGINE = MyISAM ROW_FORMAT = FIXED;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ROW_FORMAT = COMPRESSED;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ROW_FORMAT = REDUNDANT;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ROW_FORMAT = COMPACT;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) START TRANSACTION;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_AUTO_RECALC = DEFAULT;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_AUTO_RECALC = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_AUTO_RECALC = 1;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_PERSISTENT = DEFAULT;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_PERSISTENT = 0;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_PERSISTENT = 1;
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) STATS_SAMPLE_PAGES = 16;
+
+
+statement ok
+drop table if exists t1;
+
+statement ok
+drop table if exists t2;
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t1 (c bigint, s varchar(100), i int) ENGINE = MyISAM;
+
+statement ok
+create table t2 (c bigint, s varchar(100), i int) ENGINE = MyISAM;
+
+statement ok
+create table t (c bigint, s varchar(100), i int) ENGINE = MyISAM UNION = (t1,t2);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_7;

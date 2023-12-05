@@ -1,0 +1,31 @@
+statement ok
+DROP DATABASE IF EXISTS values_type;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS values_type;
+
+statement ok
+USE values_type;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id INT default 42, stime datetime default NULL);
+
+statement ok
+INSERT INTO t
+VALUES (1, '2002-06-01 08:00:00'), (2, '2002-06-01 12:00:01');
+
+statement ok
+INSERT INTO t (stime) VALUES ('2002-06-01 23:59:59');
+
+query ID rowsort
+SELECT * FROM t;
+----
+1	2002-06-01 08:00:00
+2	2002-06-01 12:00:01
+42	2002-06-01 23:59:59
+
+statement ok
+DROP DATABASE IF EXISTS values_type;

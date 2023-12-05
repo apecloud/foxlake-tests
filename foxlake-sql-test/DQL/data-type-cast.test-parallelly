@@ -1,0 +1,23 @@
+query I nosort
+SELECT
+    cast(-123 AS signed);
+----
+-123
+
+query I nosort
+SELECT
+    cast(-123 AS unsigned);
+----
+18446744073709551493
+
+query R nosort
+SELECT
+    cast(-123 AS real);
+----
+-123
+
+query R nosort
+SELECT
+    cast(-123 AS decimal);
+----
+-123

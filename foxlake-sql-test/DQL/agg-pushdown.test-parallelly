@@ -1,0 +1,62 @@
+statement ok
+DROP DATABASE IF EXISTS agg_pushdown;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS agg_pushdown;
+
+statement ok
+USE agg_pushdown;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id INT, msg VARCHAR(100), num INT);
+
+statement ok
+INSERT INTO t(id, msg, num) VALUES  (1, 'hello', 0), (3, 'world', 2), (5, null, 4), (7, 'FoxLake', 6), (9, '!', 8);
+
+query IIII rowsort
+SELECT MIN(id), MAX(id), MIN(num), MAX(num) FROM t;
+----
+1	9	0	8
+
+statement ok
+INSERT INTO t(id, msg, num) VALUES (-1, 'hello', 10), (11, 'world', -2);
+
+query IIII rowsort
+SELECT MIN(id), MAX(id), MIN(num), MAX(num) FROM t;
+----
+-1	11	-2	10
+
+statement ok
+DELETE FROM t WHERE id > 5 OR id < 3;
+
+query IIII rowsort
+SELECT MIN(id), MAX(id), MIN(num), MAX(num) FROM t;
+----
+3	5	2	4
+
+statement ok
+create table tf (f double);
+
+statement ok
+insert into tf values (1.0), (2.0), (3.0);
+
+query R nosort
+select sum(f) from tf;
+----
+6
+
+query RT nosort
+select sum(f), cast(avg(f) as char) from tf;
+----
+6	2
+
+query RT nosort
+select sum(f), cast(avg(f) as char) from tf where f > 1.0;
+----
+5	2.5
+
+statement ok
+DROP DATABASE IF EXISTS agg_pushdown;

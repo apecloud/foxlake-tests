@@ -1,0 +1,101 @@
+statement ok
+CREATE STORAGE IF NOT EXISTS secondary
+AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}/secondary-storage/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+
+# Auto-complete: STORAGE = 'default'
+statement ok
+put 'tests/cicd/data-loading/csv/t1.csv';
+
+statement ok
+put 'tests/cicd/data-loading/csv/t1.csv' TO 'secondary';
+
+query TT nosort
+LIST STORAGE 'default:t1' where filename='t1.csv';
+----
+t1.csv	FILE
+
+query TT nosort
+LIST STORAGE 'secondary:t1' where filename='t1.csv';
+----
+t1.csv	FILE
+
+statement ok
+DROP DATABASE IF EXISTS auto_complete_db;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS auto_complete_db;
+
+statement ok
+USE auto_complete_db;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+# Auto-complete STORAGE = 'default', using relative path
+statement ok
+COPY INTO t
+FROM URI 't1.csv'
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+query ITI rowsort
+SELECT * FROM t;
+----
+1	abc	2
+
+statement ok
+TRUNCATE TABLE t;
+
+# Using REGION
+statement ok
+IF STRCMP({{.STORAGE_PROVIDER}}, 'S3') = 0
+THEN
+COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}/secondary-storage/t1.csv'
+    REGION = '{{.REGION}}'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+    FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"')
+END IF;
+
+query ITI rowsort
+SELECT *
+FROM t
+WHERE STRCMP('{{.STORAGE_PROVIDER}}', 'S3') = 0
+UNION ALL
+SELECT 1 AS column1, 'abc' AS column2, 2 AS column3
+    WHERE STRCMP('{{.STORAGE_PROVIDER}}', 'S3') <> 0;
+----
+1	abc	2
+
+statement ok
+TRUNCATE TABLE t;
+
+# Using HTTPS as header
+statement ok
+IF STRCMP({{.STORAGE_PROVIDER}}, 'S3') = 0
+THEN
+COPY INTO t
+FROM URL 'https://{{.BUCKET}}.{{.ENDPOINT}}/{{.STORAGE_PATH}}/secondary-storage/t1.csv'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+    FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"')
+END IF;
+
+query ITI rowsort
+SELECT *
+FROM t
+WHERE STRCMP('{{.STORAGE_PROVIDER}}', 'S3') = 0
+UNION ALL
+SELECT 1 AS column1, 'abc' AS column2, 2 AS column3
+    WHERE STRCMP('{{.STORAGE_PROVIDER}}', 'S3') <> 0;
+----
+1	abc	2
+
+statement ok
+TRUNCATE TABLE t;
+
+statement ok
+DROP DATABASE IF EXISTS auto_complete_db;

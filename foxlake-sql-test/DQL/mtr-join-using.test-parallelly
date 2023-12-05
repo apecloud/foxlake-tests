@@ -1,0 +1,56 @@
+statement ok
+DROP DATABASE IF EXISTS mtr_join_using_test;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS mtr_join_using_test;
+
+statement ok
+USE mtr_join_using_test;
+
+statement ok
+DROP TABLE IF EXISTS t10;
+
+statement ok
+DROP TABLE IF EXISTS t11;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t10 (id INT, msg VARCHAR(100));
+
+statement ok
+CREATE TABLE IF NOT EXISTS t11 (id INT, msg VARCHAR(100));
+
+statement ok
+MERGE INTO t10
+    using (select 1 AS id, 'hello world' AS msg) s
+    on s.id = t10.id
+    when matched then update set t10.msg = 'hello world'
+    when not matched then insert values (s.id, s.msg);
+
+statement ok
+MERGE INTO t10
+    using (select 2 AS id, 'hello' AS msg) s
+    on s.id = t10.id
+    when matched then update set t10.msg = 'hello'
+    when not matched then insert values (s.id, s.msg);
+
+statement ok
+MERGE INTO t11
+    using (select 2 AS id, 'world' AS msg) s
+    on s.id = t11.id
+    when matched then update set t11.msg = 'world'
+    when not matched then insert values (s.id, s.msg);
+
+statement ok
+MERGE INTO t11
+    using (select 3 AS id, 'world hello' AS msg) s
+    on s.id = t11.id
+    when matched then update set t11.msg = 'world hello'
+    when not matched then insert values (s.id, s.msg);
+
+query T nosort
+select concat(t10.msg, " ", t11.msg) from t10 join t11 using (id);
+----
+hello world
+
+statement ok
+DROP DATABASE IF EXISTS mtr_join_using_test;

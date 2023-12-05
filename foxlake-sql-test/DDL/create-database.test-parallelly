@@ -1,0 +1,57 @@
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE abc_create_database;
+
+
+statement ok
+DROP SCHEMA IF EXISTS abc_create_database;
+
+statement ok
+CREATE SCHEMA abc_create_database;
+
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS abc_create_database;
+
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE abc_create_database CHARACTER SET = utf8;
+
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE abc_create_database DEFAULT CHARACTER SET = utf8;
+
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE abc_create_database COLLATE = utf8_bin;
+
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE abc_create_database ENCRYPTION = 'Y';
+
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;
+
+statement ok
+CREATE DATABASE abc_create_database ENCRYPTION = 'N';
+
+statement ok
+DROP DATABASE IF EXISTS abc_create_database;

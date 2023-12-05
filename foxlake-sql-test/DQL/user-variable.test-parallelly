@@ -1,0 +1,15 @@
+statement ok
+USE foxlake;
+
+query T nosort
+select @var;
+----
+NULL
+
+statement ok
+set @var=1;
+
+query I nosort
+select @var;
+----
+1

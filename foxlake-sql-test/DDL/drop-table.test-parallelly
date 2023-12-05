@@ -1,0 +1,71 @@
+statement ok
+DROP DATABASE IF EXISTS drop_table;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS drop_table;
+
+statement ok
+USE drop_table;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_drop_table;
+
+statement ok
+CREATE DATABASE test_ddls_drop_table;
+
+statement ok
+USE test_ddls_drop_table;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT);
+
+statement ok
+DROP TABLE t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS drop_table.t (id BIGINT);
+
+statement ok
+DROP TABLE drop_table.t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT);
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t1 (id BIGINT);
+
+statement ok
+CREATE TABLE IF NOT EXISTS drop_table.t2 (id BIGINT);
+
+statement ok
+DROP TABLE t1, drop_table.t2;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT);
+
+statement ok
+DROP TABLE t RESTRICT;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT);
+
+statement ok
+DROP TABLE t CASCADE;
+
+statement ok
+DROP DATABASE IF EXISTS drop_table;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_drop_table;

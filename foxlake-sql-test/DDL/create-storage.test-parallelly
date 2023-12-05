@@ -1,0 +1,58 @@
+statement ok
+CREATE STORAGE IF NOT EXISTS storage_full_info
+    AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+    ENDPOINT = '{{.ENDPOINT}}'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+
+statement ok
+DROP STORAGE IF EXISTS storage_full_info;
+
+statement error
+CREATE STORAGE IF NOT EXISTS storage_bad_endpoint
+    AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+    ENDPOINT = 'storage-not-existed-I5iVoNQu.s3.cn-northwest-1.amazonaws.com.cn'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+
+statement error
+CREATE STORAGE IF NOT EXISTS storage_bad_no_bucket
+    AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+    ENDPOINT = 'apecloud.com'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+
+statement error
+CREATE STORAGE IF NOT EXISTS storage_bad_access_key
+    AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+    ENDPOINT = '{{.ENDPOINT}}'
+    CREDENTIALS(ACCESS_KEY_ID='bad_id' SECRET_ACCESS_KEY='bad_key');
+
+statement ok
+IF STRCMP({{.STORAGE_PROVIDER}}, 'S3') = 0
+THEN
+CREATE STORAGE IF NOT EXISTS storage_complete_with_region
+    AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+    REGION = '{{.REGION}}'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+END IF;
+
+statement ok
+DROP STORAGE IF EXISTS storage_complete_with_region;
+
+statement ok
+IF STRCMP({{.STORAGE_PROVIDER}}, 'S3') = 0
+THEN
+CREATE STORAGE storage_s3_https
+   AT URL 'https://{{.BUCKET}}.{{.ENDPOINT}}/{{.STORAGE_PATH}}'
+   CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+END IF;
+
+statement ok
+DROP STORAGE IF EXISTS storage_s3_https;
+
+statement error
+IF STRCMP({{.STORAGE_PROVIDER}}, 'S3') = 0
+THEN
+CREATE STORAGE debe_test_s3_bad_region
+    AT URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+    REGION = 'invalid-region'
+    CREDENTIALS(ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}' SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+END IF;

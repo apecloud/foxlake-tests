@@ -1,0 +1,98 @@
+# Please put the directory 'cicd' to your bucket.
+# This directory can be found under the tests direcotory.
+#
+# Content of t1.csv:
+# 1|abc|2
+
+statement ok
+DROP DATABASE IF EXISTS xyz_truncate_table;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS xyz_truncate_table;
+
+statement ok
+USE xyz_truncate_table;
+
+statement ok
+DROP TABLE IF EXISTS xyz_truncate_table.t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS xyz_truncate_table.t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_truncate_table;
+
+statement ok
+CREATE DATABASE test_ddls_truncate_table;
+
+statement ok
+USE test_ddls_truncate_table;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+
+statement ok
+LOAD DATA INFILE
+    URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/t1.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}') INTO TABLE t FIELDS TERMINATED BY '|' ENCLOSED BY '"';
+
+query ITI nosort
+SELECT * FROM t;
+----
+1	abc	2
+
+statement ok
+TRUNCATE t;
+
+query ITI nosort
+SELECT * FROM t;
+----
+
+
+statement ok
+COPY INTO t FROM
+    URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/t1.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+query ITI nosort
+SELECT * FROM t;
+----
+1	abc	2
+
+statement ok
+TRUNCATE TABLE t;
+
+query ITI nosort
+SELECT * FROM t;
+----
+
+
+statement ok
+COPY INTO xyz_truncate_table.t FROM
+URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/t1.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+query ITI nosort
+SELECT * FROM xyz_truncate_table.t;
+----
+1	abc	2
+
+statement ok
+TRUNCATE xyz_truncate_table.t;
+
+query ITI nosort
+SELECT * FROM xyz_truncate_table.t;
+----
+
+statement ok
+DROP DATABASE IF EXISTS xyz_truncate_table;

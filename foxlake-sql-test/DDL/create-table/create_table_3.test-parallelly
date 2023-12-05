@@ -1,0 +1,276 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_3;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_3;
+
+statement ok
+USE test_ddls_create_table_3;
+
+
+########################## ============== data_type ============== ##########################
+
+
+# ================= Numeric ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DECIMAL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DECIMAL(5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DECIMAL(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DECIMAL UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DECIMAL ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DEC);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DEC(5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DEC(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DEC UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DEC ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NUMERIC);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NUMERIC(5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NUMERIC(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NUMERIC UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NUMERIC ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FIXED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FIXED(5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FIXED(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FIXED UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FIXED ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FLOAT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FLOAT(5));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FLOAT(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FLOAT UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c FLOAT ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE PRECISION);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE PRECISION(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE PRECISION UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DOUBLE PRECISION ZEROFILL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c REAL);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c REAL(5, 2));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c REAL UNSIGNED);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c REAL ZEROFILL);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_3;

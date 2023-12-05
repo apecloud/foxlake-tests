@@ -1,0 +1,141 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_8;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_8;
+
+statement ok
+USE test_ddls_alter_table_8;
+
+
+########################## ============== alter_option ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tt;
+
+statement ok
+CREATE TABLE t (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100));
+
+statement ok
+CREATE TABLE tt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100), KEY (i), KEY (id, i));
+
+
+# ====================== Drop Column/Index/Constraint ====================
+
+
+statement ok
+ALTER TABLE t ADD dc INT;
+
+statement ok
+ALTER TABLE t DROP dc;
+
+
+statement ok
+ALTER TABLE t ADD dc INT;
+
+statement ok
+ALTER TABLE t DROP COLUMN dc;
+
+
+statement ok
+ALTER TABLE t ADD INDEX di (id);
+
+statement ok
+ALTER TABLE t DROP INDEX di;
+
+
+statement ok
+ALTER TABLE t ADD INDEX di (id);
+
+statement ok
+ALTER TABLE t DROP KEY di;
+
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT fk_symbol FOREIGN KEY (id) REFERENCES tt (id);
+
+statement ok
+ALTER TABLE t DROP FOREIGN KEY fk_symbol;
+
+
+# ====================== Force & Lock Attributes ====================
+
+
+statement ok
+ALTER TABLE t FORCE;
+
+
+statement ok
+ALTER TABLE t ADD INDEX (id), LOCK = DEFAULT;
+
+statement ok
+ALTER TABLE t ADD INDEX (id), LOCK = NONE;
+
+statement ok
+ALTER TABLE t ADD INDEX (id), LOCK = SHARED;
+
+statement ok
+ALTER TABLE t ADD INDEX (id), LOCK = EXCLUSIVE;
+
+
+# ====================== Modify Column ====================
+
+
+statement ok
+ALTER TABLE t ADD iii INT;
+
+statement ok
+ALTER TABLE t MODIFY iii MEDIUMINT;
+
+statement ok
+ALTER TABLE t MODIFY COLUMN iii BIGINT;
+
+statement ok
+ALTER TABLE t MODIFY iii INT FIRST;
+
+statement ok
+ALTER TABLE t MODIFY iii INT AFTER id;
+
+
+# ====================== Order By ====================
+
+
+statement ok
+ALTER TABLE t ORDER BY id;
+
+statement ok
+ALTER TABLE t ORDER BY id, i;
+
+
+# ====================== Rename Column/Index ====================
+
+
+statement ok
+ALTER TABLE t ADD iiii INT;
+
+statement ok
+ALTER TABLE t RENAME COLUMN iiii TO iiiii;
+
+
+statement ok
+ALTER TABLE t ADD INDEX ri (id);
+
+statement ok
+ALTER TABLE t RENAME INDEX ri TO ri1;
+
+statement ok
+ALTER TABLE t RENAME KEY ri1 TO ri2;
+
+
+statement ok
+ALTER TABLE t ADD INDEX ri (id);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_8;

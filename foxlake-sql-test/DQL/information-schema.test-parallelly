@@ -1,0 +1,53 @@
+statement ok
+DROP DATABASE IF EXISTS test_information_schema;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS test_information_schema;
+
+statement ok
+USE test_information_schema;
+
+statement ok
+drop table if exists tt;
+
+statement ok
+create table tt(a int primary key, b int);
+
+query TTTTITTTIIIIITTTTTTTT nosort
+select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'test_information_schema' AND TABLE_NAME LIKE 'tt';
+----
+def	test_information_schema	tt	a	1	NULL	NO	int	NULL	NULL	10	0	NULL	NULL	NULL	int	PRI	($empty$)	select,insert,update,references	($empty$)	($empty$)
+def	test_information_schema	tt	b	2	NULL	YES	int	NULL	NULL	10	0	NULL	NULL	NULL	int	($empty$)	($empty$)	select,insert,update,references	($empty$)	($empty$)
+
+query TTTTITTTIIIIITTTTTTTT nosort
+select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'test_information_schema' AND TABLE_NAME LIKE '%tt';
+----
+def	test_information_schema	tt	a	1	NULL	NO	int	NULL	NULL	10	0	NULL	NULL	NULL	int	PRI	($empty$)	select,insert,update,references	($empty$)	($empty$)
+def	test_information_schema	tt	b	2	NULL	YES	int	NULL	NULL	10	0	NULL	NULL	NULL	int	($empty$)	($empty$)	select,insert,update,references	($empty$)	($empty$)
+
+query TTTTITTTIIIIITTTTTTTT nosort
+select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'test_information_schema' AND TABLE_NAME LIKE '%tt%';
+----
+def	test_information_schema	tt	a	1	NULL	NO	int	NULL	NULL	10	0	NULL	NULL	NULL	int	PRI	($empty$)	select,insert,update,references	($empty$)	($empty$)
+def	test_information_schema	tt	b	2	NULL	YES	int	NULL	NULL	10	0	NULL	NULL	NULL	int	($empty$)	($empty$)	select,insert,update,references	($empty$)	($empty$)
+
+query TTTTITTTIIIIITTTTTTTT nosort
+select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'test_information_schema' AND TABLE_NAME LIKE 'tt%';
+----
+def	test_information_schema	tt	a	1	NULL	NO	int	NULL	NULL	10	0	NULL	NULL	NULL	int	PRI	($empty$)	select,insert,update,references	($empty$)	($empty$)
+def	test_information_schema	tt	b	2	NULL	YES	int	NULL	NULL	10	0	NULL	NULL	NULL	int	($empty$)	($empty$)	select,insert,update,references	($empty$)	($empty$)
+
+query TTTTITTTIIIIITTTTTTTT nosort
+select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'test_information_schema' AND TABLE_NAME LIKE 't%t';
+----
+def	test_information_schema	tt	a	1	NULL	NO	int	NULL	NULL	10	0	NULL	NULL	NULL	int	PRI	($empty$)	select,insert,update,references	($empty$)	($empty$)
+def	test_information_schema	tt	b	2	NULL	YES	int	NULL	NULL	10	0	NULL	NULL	NULL	int	($empty$)	($empty$)	select,insert,update,references	($empty$)	($empty$)
+
+query TTTTITTTIIIIITTTTTTTT nosort
+select * from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'test_information_schema' AND TABLE_NAME = 'tt';
+----
+def	test_information_schema	tt	a	1	NULL	NO	int	NULL	NULL	10	0	NULL	NULL	NULL	int	PRI	($empty$)	select,insert,update,references	($empty$)	($empty$)
+def	test_information_schema	tt	b	2	NULL	YES	int	NULL	NULL	10	0	NULL	NULL	NULL	int	($empty$)	($empty$)	select,insert,update,references	($empty$)	($empty$)
+
+statement ok
+DROP DATABASE IF EXISTS schema_changed_query;

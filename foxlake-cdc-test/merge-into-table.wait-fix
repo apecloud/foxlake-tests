@@ -1,0 +1,42 @@
+# Please put the directory 'cicd' to your bucket.
+# This directory can be found under the tests direcotory.
+
+statement ok
+CREATE DATABASE IF NOT EXISTS test_ab;
+
+statement ok
+USE test_ab;
+
+statement ok
+DROP TABLE IF EXISTS dt;
+
+statement ok
+create table dt (`id` int, `dt` datetime, `dt_ms` datetime(3), `dt_us` datetime(6), PRIMARY KEY (`id`) );
+
+
+# run merge into table on alter-table.binlog
+query TTTTT nosort
+MERGE INTO TABLE `test_ab`.`dt`
+USING
+URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/merge-into-table/alter-table/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+----
+Table	`test_ab`.`dt`	binlog.000006 11444	True	Merged incremental data.
+Table	`test_ab`.`dt`	binlog.000006 11614	True	Applied DDL: alter table dt add column t time default '123:12:34', add t_ms time(3) default '123:12:34.123', add t_us time(6) default '123:12:34.123456'
+Table	`test_ab`.`dt`	binlog.000006 11924	True	Applied DDL: alter table dt add column d date default '2022-01-02'
+Table	`test_ab`.`dt`	binlog.000006 12309	True	Merged incremental data.
+Table	`test_ab`.`dt`	binlog.000006 12537	True	Applied DDL: alter table dt rename column t to t_new
+Table	`test_ab`.`dt`	binlog.000006 12749	True	Applied DDL: alter table dt change column t_ms t_ms_str varchar(100) default 'default str'
+Table	`test_ab`.`dt`	binlog.000006 13164	True	Merged incremental data.
+Table	`test_ab`.`dt`	binlog.000006 13410	True	Applied DDL: alter table dt modify d datetime default '2022-02-03 12:34:56'
+Table	`test_ab`.`dt`	binlog.000006 13819	True	Merged incremental data.
+Table	`test_ab`.`dt`	binlog.000006 14067	True	Applied DDL: alter table dt add column test_default varchar(100) default 'lol, default str'
+Table	`test_ab`.`dt`	binlog.000006 14324	True	Applied DDL: alter table dt alter column test_default set default 'lol new default'
+Table	`test_ab`.`dt`	binlog.000006 14573	True	Applied DDL: alter table dt drop column dt_ms
+
+query IDDDTDDT rowsort
+SELECT * FROM test_ab.dt;
+----
+1	2022-12-06 07:15:38	2022-12-06 07:15:38.123456	123:12:34	lol, a str	123:12:34.123456	2022-12-07 09:03:21	lol new default
+

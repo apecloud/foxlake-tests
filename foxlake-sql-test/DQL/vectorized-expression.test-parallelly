@@ -1,0 +1,190 @@
+statement ok
+DROP DATABASE IF EXISTS test_vectorized;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS test_vectorized;
+
+statement ok
+USE test_vectorized;
+
+statement ok
+CREATE TABLE test_ArithmeticBinaryOperator (
+    i int,
+    j double
+);
+
+statement ok
+INSERT INTO test_ArithmeticBinaryOperator
+    VALUES (4, 4.0);
+
+query IIIIR nosort
+SELECT
+    i + 2,
+    i - 2,
+    i * 2,
+    i % 2,
+    j / 2
+FROM
+    test_ArithmeticBinaryOperator;
+----
+6	2	8	0	2
+
+query IIIIR nosort
+SELECT
+    2 + i,
+    2 - i,
+    2 * i,
+    2 % i,
+    16 / j
+FROM
+    test_ArithmeticBinaryOperator;
+----
+6	-2	8	2	4
+
+query IIIIR nosort
+SELECT
+    i + i,
+    i - i,
+    i * i,
+    i % i,
+    j / j
+FROM
+    test_ArithmeticBinaryOperator;
+----
+8	0	16	0	1
+
+query RR nosort
+SELECT
+    i / 0,
+    j / 0
+FROM
+    test_ArithmeticBinaryOperator;
+----
+NULL	NULL
+
+statement ok
+CREATE TABLE test_DivideOperator (
+    i int,
+    j int
+);
+
+statement ok
+INSERT INTO test_DivideOperator
+    VALUES (4, 2);
+
+query RRRRR nosort
+SELECT
+    i / 2,
+    j / 2,
+    16 / i,
+    16 / j,
+    i / j
+FROM
+    test_DivideOperator;
+----
+2.0000	1.0000	4.0000	8.0000	2.0000
+
+query RR nosort
+SELECT
+    i / 0,
+    j / 0
+FROM
+    test_DivideOperator;
+----
+NULL	NULL
+
+statement ok
+CREATE TABLE test_DecimalAddSubMulOperator (
+    i decimal
+);
+
+statement ok
+INSERT INTO test_DecimalAddSubMulOperator
+    VALUES (4);
+
+query RRR nosort
+SELECT
+    i + 2,
+    i - 2,
+    i * 2
+FROM
+    test_DecimalAddSubMulOperator;
+----
+6	2	8
+
+query RRR nosort
+SELECT
+    2 + i,
+    2 - i,
+    2 * i
+FROM
+    test_DecimalAddSubMulOperator;
+----
+6	-2	8
+
+query RRR nosort
+SELECT
+    i + i,
+    i - i,
+    i * i
+FROM
+    test_DecimalAddSubMulOperator;
+----
+8	0	16
+
+statement ok
+CREATE TABLE test_ComparisonBinaryOperator (
+    i int,
+    j int
+);
+
+statement ok
+INSERT INTO test_ComparisonBinaryOperator
+    VALUES (1, 2),
+    (4, 3),
+    (6, 6);
+
+query IIIIII nosort
+SELECT
+    i > 4,
+    i >= 4,
+    i < 4,
+    i <= 4,
+    i = 4,
+    i != 4
+FROM
+    test_ComparisonBinaryOperator;
+----
+0	0	1	1	0	1
+0	1	0	1	1	0
+1	1	0	0	0	1
+
+query IIIIII nosort
+SELECT
+    4 > i,
+    4 >= i,
+    4 < i,
+    4 <= i,
+    4 = i,
+    4 != i
+FROM
+    test_ComparisonBinaryOperator;
+----
+1	1	0	0	0	1
+0	1	0	1	1	0
+0	0	1	1	0	1
+
+query IIIIII nosort
+SELECT
+    j > i,
+    j >= i,
+    j < i,
+    j <= i,
+    j = i,
+    j != i
+FROM
+    test_ComparisonBinaryOperator;
+----
+1	1	0	0	0	1
+0	0	1	1	0	1
+0	1	0	1	1	0

@@ -1,0 +1,87 @@
+statement ok
+DROP DATABASE IF EXISTS alter_view;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS alter_view;
+
+statement ok
+USE alter_view;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_view;
+
+statement ok
+CREATE DATABASE test_ddls_alter_view;
+
+statement ok
+USE test_ddls_alter_view;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT, s VARCHAR(100), i INT);
+
+statement ok
+CREATE TABLE IF NOT EXISTS alter_view.t (id BIGINT, s VARCHAR(100), i INT);
+
+statement ok
+CREATE OR REPLACE VIEW v AS select * from t;
+
+statement ok
+CREATE OR REPLACE VIEW alter_view.v AS select * from alter_view.t;
+
+
+statement ok
+ALTER VIEW v AS select * from alter_view.t;
+
+
+statement ok
+ALTER VIEW alter_view.v AS select * from t;
+
+
+statement ok
+ALTER ALGORITHM = UNDEFINED VIEW v AS select * from t;
+
+
+statement ok
+ALTER ALGORITHM = MERGE VIEW v AS select * from t;
+
+
+statement ok
+ALTER ALGORITHM = TEMPTABLE VIEW v AS select * from t;
+
+
+statement ok
+ALTER DEFINER = root VIEW v AS select * from t;
+
+
+statement ok
+ALTER SQL SECURITY DEFINER VIEW v AS select * from t;
+
+
+statement ok
+ALTER SQL SECURITY INVOKER VIEW v AS select * from t;
+
+
+statement ok
+ALTER VIEW v (c1, c2, c3) AS select * from t;
+
+
+statement ok
+ALTER VIEW v AS select * from t WITH CHECK OPTION;
+
+
+statement ok
+ALTER VIEW v AS select * from t WITH CASCADED CHECK OPTION;
+
+
+statement ok
+ALTER VIEW v AS select * from t WITH LOCAL CHECK OPTION;
+
+statement ok
+DROP DATABASE IF EXISTS alter_view;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_view;

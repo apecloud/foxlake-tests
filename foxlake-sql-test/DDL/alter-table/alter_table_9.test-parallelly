@@ -1,0 +1,105 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_9;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_9;
+
+statement ok
+USE test_ddls_alter_table_9;
+
+
+########################## ============== alter_option ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS rt;
+
+statement ok
+DROP TABLE IF EXISTS rt1;
+
+statement ok
+DROP TABLE IF EXISTS rt2;
+
+statement ok
+DROP TABLE IF EXISTS rt3;
+
+statement ok
+CREATE TABLE rt (id BIGINT);
+
+
+# ====================== Rename [TO/AS] Table ====================
+
+
+statement ok
+ALTER TABLE rt RENAME rt1;
+
+statement ok
+ALTER TABLE rt1 RENAME TO rt2;
+
+statement ok
+ALTER TABLE rt2 RENAME AS rt3;
+
+
+# ====================== Test Multiple Alter Specifications In One Line ====================
+
+statement ok
+DROP DATABASE IF EXISTS d1_alter_table_9;
+
+statement ok
+DROP DATABASE IF EXISTS d2_alter_table_9;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS d1_alter_table_9;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS d2_alter_table_9;
+
+statement ok
+DROP TABLE IF EXISTS d1_alter_table_9.t1;
+
+statement ok
+CREATE TABLE d1_alter_table_9.t1 (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT) ENGINE = 'columnar@default';
+
+statement ok
+ALTER TABLE d1_alter_table_9.t1 RENAME t2, ADD COLUMN ii INT NOT NULL DEFAULT 123 AFTER s, RENAME d2_alter_table_9.t3;
+
+statement ok
+DROP TABLE IF EXISTS d2_alter_table_9.t3;
+
+statement ok
+DROP DATABASE IF EXISTS d1_alter_table_9;
+
+statement ok
+DROP DATABASE IF EXISTS d2_alter_table_9;
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS wvt1;
+
+statement ok
+DROP TABLE IF EXISTS wvt2;
+
+statement ok
+CREATE TABLE wvt1 (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100)) PARTITION BY HASH(id) (PARTITION p0);
+
+statement ok
+CREATE TABLE wvt2 (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT NOT NULL, ss VARCHAR(100));
+
+
+# ====================== {WITHOUT | WITH} VALIDATION ====================
+
+
+statement ok
+ALTER TABLE wvt1 EXCHANGE PARTITION p0 WITH TABLE wvt2 WITHOUT VALIDATION;
+
+statement ok
+ALTER TABLE wvt1 EXCHANGE PARTITION p0 WITH TABLE wvt2 WITH VALIDATION;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_9;

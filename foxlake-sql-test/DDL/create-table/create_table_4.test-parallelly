@@ -1,0 +1,335 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_4;
+
+statement ok
+CREATE DATABASE test_ddls_create_table_4;
+
+statement ok
+USE test_ddls_create_table_4;
+
+
+########################## ============== data_type ============== ##########################
+
+
+# ================= Date and Time ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DATE);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DATETIME);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c DATETIME(6));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TIMESTAMP);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TIMESTAMP(6));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TIME);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TIME(6));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c YEAR);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c YEAR(4));
+
+
+# ================= Strings ====================
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c CHAR);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NATIONAL CHAR);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c CHAR(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c CHAR CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c CHAR COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c NATIONAL VARCHAR(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c VARCHAR(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c VARCHAR(8) CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c VARCHAR(8) COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BINARY);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BINARY(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c VARBINARY(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYBLOB);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BLOB);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c BLOB(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMBLOB);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c LONGBLOB);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYTEXT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYTEXT CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TINYTEXT COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TEXT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TEXT(8));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TEXT CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c TEXT COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMTEXT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMTEXT CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c MEDIUMTEXT COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c LONGTEXT);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c LONGTEXT CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c LONGTEXT COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c ENUM('value1','value2'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c ENUM('value1','value2') CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c ENUM('value1','value2') COLLATE utf8_bin);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SET('value1','value2'));
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SET('value1','value2') CHARACTER SET utf8);
+
+
+statement ok
+drop table if exists t;
+
+statement ok
+create table t (c SET('value1','value2') COLLATE utf8_bin);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_create_table_4;

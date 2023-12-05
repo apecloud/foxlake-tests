@@ -1,0 +1,96 @@
+# Please put the directory 'cicd' to your bucket.
+# This directory can be found under the tests direcotory.
+
+statement ok
+DROP DATABASE IF EXISTS d1;
+
+statement ok
+DROP DATABASE IF EXISTS d2;
+
+statement ok
+DROP DATABASE IF EXISTS d3;
+
+
+# run merge into database on rename-table.binlog
+query TTTTT nosort
+MERGE INTO DATABASE d1 ENGINE 'COLUMNAR@default'
+USING
+    URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/merge-into-database/rename-table/'
+    ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}');
+----
+Database	`d1`	binlog.000007 1152008	True	Created.
+Table	`d1`.`t`	binlog.000007 1152545	True	Created.
+Table	`d1`.`t`	binlog.000007 1153368	True	Merged incremental data.
+Database	`d2`	binlog.000007 1152187	True	Created.
+Table	`d1`.`t`	binlog.000007 1153368	True	Merged incremental data.
+Table	`d2`.`d1_t_1`	binlog.000007 1154199	True	Applied DDL: rename table d1.t to d1_t_1
+Table	`d2`.`d1_t_1`	binlog.000007 1154522	True	Merged incremental data.
+Table	`d1`.`d1_t_2`	binlog.000007 1155642	True	Applied DDL: rename table d2.d1_t_1 to d1.d1_t_2
+Database	`d1`	binlog.000007 1155642	True	Merged incremental data.
+Table	`d1`.`d1_t_2`	binlog.000007 1155973	True	Merged incremental data.
+Table	`d2`.`t`	binlog.000007 1152776	True	Created.
+Table	`d2`.`t`	binlog.000007 1153688	True	Merged incremental data.
+Table	`d2`.`d2_t_1`	binlog.000007 1154681	True	Applied DDL: rename table t to d2_t_1
+Table	`d2`.`d2_t_1`	binlog.000007 1154998	True	Merged incremental data.
+Table	`d1`.`d2_t_2`	binlog.000007 1156132	True	Applied DDL: rename table d2.d2_t_1 to d1.d2_t_2
+Database	`d1`	binlog.000007 1156132	True	Merged incremental data.
+Table	`d1`.`d2_t_2`	binlog.000007 1156463	True	Merged incremental data.
+Database	`d3`	binlog.000007 1152366	True	Created.
+Table	`d3`.`t`	binlog.000007 1153007	True	Created.
+Table	`d3`.`t`	binlog.000007 1154008	True	Merged incremental data.
+Table	`d2`.`d3_t_1`	binlog.000007 1155157	True	Applied DDL: rename table d3.t to d2.d3_t_1
+Table	`d2`.`d3_t_1`	binlog.000007 1155483	True	Merged incremental data.
+Table	`d1`.`d3_t_2`	binlog.000007 1156622	True	Applied DDL: rename table d2.d3_t_1 to d1.d3_t_2
+Database	`d1`	binlog.000007 1156622	True	Merged incremental data.
+Table	`d1`.`d3_t_2`	binlog.000007 1156953	True	Merged incremental data.
+Table	`d3`.`d2_t_4`	binlog.000007 1157114	True	Applied DDL: alter table d1.d2_t_2 rename d2.d2_t_3, add column ii int default 12345 after id, rename to d3.d2_t_4, change column i i_str varchar(100) default 'abc'
+Table	`d3`.`d2_t_4`	binlog.000007 1157566	True	Merged incremental data.
+Table	`d1`.`d2_t_5`	binlog.000007 1157730	True	Applied DDL: alter table d3.d2_t_4 rename as d1.d2_t_5, add column ss varchar(100) default 'xyz' after s
+Database	`d1`	binlog.000007 1157730	True	Merged incremental data.
+Table	`d1`.`d2_t_5`	binlog.000007 1158125	True	Merged incremental data.
+Database	`d1`	binlog.000007 1158125	True	Merged incremental data.
+
+query T rowsort
+SHOW TABLES FROM d1;
+----
+d1_t_2
+d2_t_5
+d3_t_2
+
+query T rowsort
+SHOW TABLES FROM d2;
+----
+
+query T rowsort
+SHOW TABLES FROM d3;
+----
+
+query ITI nosort
+SELECT * FROM d1.d1_t_2 ORDER BY id;
+----
+1	1	1
+2	1	1
+3	1	1
+4	2	2
+5	1	1
+
+query IITTT nosort
+SELECT * FROM d1.d2_t_5 ORDER BY id;
+----
+1	12345	2	xyz	2
+2	12345	2	xyz	2
+3	12345	2	xyz	2
+4	12345	2	xyz	2
+5	12345	1	xyz	1
+6	3	3	xyz	3
+7	1	1	1	1
+
+query ITI nosort
+SELECT * FROM d1.d3_t_2 ORDER BY id;
+----
+1	3	3
+2	3	3
+3	3	3
+4	2	2
+5	1	1

@@ -1,0 +1,192 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_12;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_12;
+
+statement ok
+USE test_ddls_alter_table_12;
+
+
+########################## ============== table_options ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE t (id BIGINT) ENGINE=MyISAM;
+
+
+# ====================== Change Table Options ====================
+
+
+statement ok
+ALTER TABLE t AUTOEXTEND_SIZE = 0;
+
+statement ok
+ALTER TABLE t AUTO_INCREMENT = 0;
+
+statement ok
+ALTER TABLE t AVG_ROW_LENGTH = 0;
+
+statement ok
+ALTER TABLE t CHARACTER SET = utf8;
+
+statement ok
+ALTER TABLE t DEFAULT CHARACTER SET = utf8;
+
+statement ok
+ALTER TABLE t CHECKSUM = 0;
+
+statement ok
+ALTER TABLE t CHECKSUM = 1;
+
+statement ok
+ALTER TABLE t COLLATE = utf8_bin;
+
+statement ok
+ALTER TABLE t DEFAULT COLLATE = utf8_bin;
+
+statement ok
+ALTER TABLE t COMMENT = 'This is a new table.';
+
+statement ok
+ALTER TABLE t COMPRESSION = 'ZLIB';
+
+statement ok
+ALTER TABLE t COMPRESSION = 'LZ4';
+
+statement ok
+ALTER TABLE t COMPRESSION = 'NONE';
+
+statement ok
+ALTER TABLE t CONNECTION = 'mysql://root:password@127.0.0.1:53306/test_ab/test_merge';
+
+statement ok
+ALTER TABLE t DATA DIRECTORY = '/';
+
+statement ok
+ALTER TABLE t INDEX DIRECTORY = '/';
+
+statement ok
+ALTER TABLE t DELAY_KEY_WRITE = 0;
+
+statement ok
+ALTER TABLE t DELAY_KEY_WRITE = 1;
+
+statement ok
+ALTER TABLE t ENGINE = 'columnar@default';
+
+statement ok
+ALTER TABLE t INSERT_METHOD = NO;
+
+statement ok
+ALTER TABLE t INSERT_METHOD = FIRST;
+
+statement ok
+ALTER TABLE t INSERT_METHOD = LAST;
+
+statement ok
+ALTER TABLE t KEY_BLOCK_SIZE = 16;
+
+statement ok
+ALTER TABLE t MAX_ROWS = 1024;
+
+statement ok
+ALTER TABLE t MIN_ROWS = 1024;
+
+statement ok
+ALTER TABLE t PACK_KEYS = 0;
+
+statement ok
+ALTER TABLE t PACK_KEYS = 1;
+
+statement ok
+ALTER TABLE t PACK_KEYS = DEFAULT;
+
+statement ok
+ALTER TABLE t PASSWORD = 'password';
+
+statement ok
+ALTER TABLE t ROW_FORMAT = DEFAULT;
+
+statement ok
+ALTER TABLE t ROW_FORMAT = DYNAMIC;
+
+statement ok
+ALTER TABLE t ROW_FORMAT = FIXED;
+
+statement ok
+ALTER TABLE t ROW_FORMAT = COMPRESSED;
+
+statement ok
+ALTER TABLE t ROW_FORMAT = REDUNDANT;
+
+statement ok
+ALTER TABLE t ROW_FORMAT = COMPACT;
+
+statement ok
+ALTER TABLE t STATS_AUTO_RECALC = 0;
+
+statement ok
+ALTER TABLE t STATS_AUTO_RECALC = 1;
+
+statement ok
+ALTER TABLE t STATS_AUTO_RECALC = DEFAULT;
+
+statement ok
+ALTER TABLE t STATS_PERSISTENT = 0;
+
+statement ok
+ALTER TABLE t STATS_PERSISTENT = 1;
+
+statement ok
+ALTER TABLE t STATS_PERSISTENT = DEFAULT;
+
+statement ok
+ALTER TABLE t STATS_SAMPLE_PAGES = 16;
+
+statement ok
+ALTER TABLE t TABLESPACE innodb_system;
+
+statement ok
+ALTER TABLE t TABLESPACE innodb_system STORAGE DISK;
+
+statement ok
+ALTER TABLE t TABLESPACE innodb_system STORAGE MEMORY;
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tu1;
+
+statement ok
+DROP TABLE IF EXISTS tu2;
+
+statement ok
+CREATE TABLE t (id BIGINT) ENGINE = MyISAM;
+
+statement ok
+CREATE TABLE tu1 (id BIGINT) ENGINE = MyISAM;
+
+statement ok
+CREATE TABLE tu2 (id BIGINT) ENGINE = MyISAM;
+
+
+# ====================== Alter Table Union ====================
+
+
+statement ok
+ALTER TABLE t UNION = (tu1, tu2);
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_12;

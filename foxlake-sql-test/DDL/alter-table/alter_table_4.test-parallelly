@@ -1,0 +1,88 @@
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_4;
+
+statement ok
+CREATE DATABASE test_ddls_alter_table_4;
+
+statement ok
+USE test_ddls_alter_table_4;
+
+
+########################## ============== alter_option ============== ##########################
+
+
+# ====================== Prerequisite ====================
+
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+DROP TABLE IF EXISTS tt;
+
+statement ok
+CREATE TABLE t (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100));
+
+statement ok
+CREATE TABLE tt (id BIGINT PRIMARY KEY NOT NULL, s VARCHAR(100), i INT, g GEOMETRY NOT NULL, ss VARCHAR(100), KEY (i), KEY (id, i));
+
+
+# ====================== Add Foreign Key Constraint ====================
+
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i);
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT FOREIGN KEY (i) REFERENCES tt (i);
+
+statement ok
+ALTER TABLE t ADD CONSTRAINT fk_cons1 FOREIGN KEY (i) REFERENCES tt (i);
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY fk1 (i) REFERENCES tt (i);
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (id, i) REFERENCES tt (id, i);
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) MATCH FULL;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) MATCH PARTIAL;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) MATCH SIMPLE;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON DELETE RESTRICT;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON DELETE CASCADE;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON DELETE SET NULL;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON DELETE NO ACTION;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON DELETE SET DEFAULT;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON UPDATE RESTRICT;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON UPDATE CASCADE;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON UPDATE SET NULL;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON UPDATE NO ACTION;
+
+statement ok
+ALTER TABLE t ADD FOREIGN KEY (i) REFERENCES tt (i) ON UPDATE SET DEFAULT;
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_alter_table_4;

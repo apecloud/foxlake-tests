@@ -1,0 +1,1478 @@
+statement ok
+DROP DATABASE IF EXISTS test_insert_default_null;
+
+statement ok
+CREATE DATABASE test_insert_default_null;
+
+statement ok
+USE test_insert_default_null;
+
+# Test on append-only table
+
+statement ok
+DROP TABLE IF EXISTS t_insert_all_data_types_ao;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_insert_all_data_types_ao (
+  id BIGINT,
+  c_bit BIT DEFAULT NULL,
+  c_bit_64 BIT(64) DEFAULT NULL,
+  c_bool BOOL DEFAULT NULL,
+  c_boolean BOOLEAN DEFAULT NULL,
+  c_tinyint TINYINT DEFAULT NULL,
+  c_tinyint_1 TINYINT(1) DEFAULT NULL,
+  c_tinyint_unsigned TINYINT UNSIGNED DEFAULT NULL,
+  c_tinyint_zerofill TINYINT ZEROFILL DEFAULT NULL,
+  c_smallint SMALLINT DEFAULT NULL,
+  c_smallint_1 SMALLINT(1) DEFAULT NULL,
+  c_smallint_unsigned SMALLINT UNSIGNED DEFAULT NULL,
+  c_smallint_zerofill SMALLINT ZEROFILL DEFAULT NULL,
+  c_mediumint MEDIUMINT DEFAULT NULL,
+  c_mediumint_1 MEDIUMINT(1) DEFAULT NULL,
+  c_mediumint_unsigned MEDIUMINT UNSIGNED DEFAULT NULL,
+  c_mediumint_zerofill MEDIUMINT ZEROFILL DEFAULT NULL,
+  c_int INT DEFAULT NULL,
+  c_int_1 INT(1) DEFAULT NULL,
+  c_int_unsigned INT UNSIGNED DEFAULT NULL,
+  c_int_zerofill INT ZEROFILL DEFAULT NULL,
+  c_integer INTEGER DEFAULT NULL,
+  c_integer_1 INTEGER(1) DEFAULT NULL,
+  c_integer_unsigned INTEGER UNSIGNED DEFAULT NULL,
+  c_integer_zerofill INTEGER ZEROFILL DEFAULT NULL,
+  c_bigint BIGINT DEFAULT NULL,
+  c_bigint_1 BIGINT(1) DEFAULT NULL,
+  c_bigint_unsigned BIGINT UNSIGNED DEFAULT NULL,
+  c_bigint_zerofill BIGINT ZEROFILL DEFAULT NULL,
+  c_decimal DECIMAL DEFAULT NULL,
+  c_decimal_5 DECIMAL(5) DEFAULT NULL,
+  c_decimal_5_2 DECIMAL(5, 2) DEFAULT NULL,
+  c_decimal_unsigned DECIMAL UNSIGNED DEFAULT NULL,
+  c_decimal_zerofill DECIMAL ZEROFILL DEFAULT NULL,
+  c_dec DEC DEFAULT NULL,
+  c_dec_5 DEC(5) DEFAULT NULL,
+  c_dec_5_2 DEC(5, 2) DEFAULT NULL,
+  c_dec_unsigned DEC UNSIGNED DEFAULT NULL,
+  c_dec_zerofill DEC ZEROFILL DEFAULT NULL,
+  c_numeric NUMERIC DEFAULT NULL,
+  c_numeric_5 NUMERIC(5) DEFAULT NULL,
+  c_numeric_5_2 NUMERIC(5, 2) DEFAULT NULL,
+  c_numeric_unsigned NUMERIC UNSIGNED DEFAULT NULL,
+  c_numeric_zerofill NUMERIC ZEROFILL DEFAULT NULL,
+  c_fixed FIXED DEFAULT NULL,
+  c_fixed_5 FIXED(5) DEFAULT NULL,
+  c_fixed_5_2 FIXED(5, 2) DEFAULT NULL,
+  c_fixed_unsigned FIXED UNSIGNED DEFAULT NULL,
+  c_fixed_zerofill FIXED ZEROFILL DEFAULT NULL,
+  c_float FLOAT DEFAULT NULL,
+  c_float_5 FLOAT(5) DEFAULT NULL,
+  c_float_5_2 FLOAT(5, 2) DEFAULT NULL,
+  c_float_unsigned FLOAT UNSIGNED DEFAULT NULL,
+  c_float_zerofill FLOAT ZEROFILL DEFAULT NULL,
+  c_double DOUBLE DEFAULT NULL,
+  c_double_5_2 DOUBLE(5, 2) DEFAULT NULL,
+  c_double_unsigned DOUBLE UNSIGNED DEFAULT NULL,
+  c_double_zerofill DOUBLE ZEROFILL DEFAULT NULL,
+  c_double_precision DOUBLE PRECISION DEFAULT NULL,
+  c_double_precision_5_2 DOUBLE PRECISION(5, 2) DEFAULT NULL,
+  c_double_precision_unsigned DOUBLE PRECISION UNSIGNED DEFAULT NULL,
+  c_double_precision_zerofill DOUBLE PRECISION ZEROFILL DEFAULT NULL,
+  c_real REAL DEFAULT NULL,
+  c_real_5_2 REAL(5, 2) DEFAULT NULL,
+  c_real_unsigned REAL UNSIGNED DEFAULT NULL,
+  c_real_zerofill REAL ZEROFILL DEFAULT NULL,
+  c_date DATE DEFAULT NULL,
+  c_datetime DATETIME DEFAULT NULL,
+  c_datetime_6 DATETIME(6) DEFAULT NULL,
+  c_timestamp TIMESTAMP DEFAULT NULL,
+  c_timestamp_6 TIMESTAMP(6) DEFAULT NULL,
+  c_time TIME DEFAULT NULL,
+  c_time_6 TIME(6) DEFAULT NULL,
+  c_year YEAR DEFAULT NULL,
+  c_year_4 YEAR(4) DEFAULT NULL,
+  c_char CHAR DEFAULT NULL,
+  c_national_char NATIONAL CHAR DEFAULT NULL,
+  c_char_8 CHAR(8) DEFAULT NULL,
+  c_char_character_set_utf8 CHAR CHARACTER SET utf8 DEFAULT NULL,
+  c_char_collate_utf8_bin CHAR COLLATE utf8_bin DEFAULT NULL,
+  c_national_varchar_8 NATIONAL VARCHAR(8) DEFAULT NULL,
+  c_varchar_8 VARCHAR(8) DEFAULT NULL,
+  c_varchar_8_character_set_utf8 VARCHAR(8) CHARACTER SET utf8 DEFAULT NULL,
+  c_varchar_8_collate_utf8_bin VARCHAR(8) COLLATE utf8_bin DEFAULT NULL,
+  c_binary BINARY DEFAULT NULL,
+  c_binary_8 BINARY(8) DEFAULT NULL,
+  c_varbinary_8 VARBINARY(8) DEFAULT NULL,
+  c_tinyblob TINYBLOB DEFAULT NULL,
+  c_blob BLOB DEFAULT NULL,
+  c_blob_8 BLOB(8) DEFAULT NULL,
+  c_mediumblob MEDIUMBLOB DEFAULT NULL,
+  c_longblob LONGBLOB DEFAULT NULL,
+  c_tinytext TINYTEXT DEFAULT NULL,
+  c_tinytext_character_set_utf8 TINYTEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_tinytext_collate_utf8_bin TINYTEXT COLLATE utf8_bin DEFAULT NULL,
+  c_text TEXT DEFAULT NULL,
+  c_text_8 TEXT(8) DEFAULT NULL,
+  c_text_character_set_utf8 TEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_text_collate_utf8_bin TEXT COLLATE utf8_bin DEFAULT NULL,
+  c_mediumtext MEDIUMTEXT DEFAULT NULL,
+  c_mediumtext_character_set_utf8 MEDIUMTEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_mediumtext_collate_utf8_bin MEDIUMTEXT COLLATE utf8_bin DEFAULT NULL,
+  c_longtext LONGTEXT DEFAULT NULL,
+  c_longtext_character_set_utf8 LONGTEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_longtext_collate_utf8_bin LONGTEXT COLLATE utf8_bin DEFAULT NULL,
+  c_enum ENUM('value1', 'value2') DEFAULT NULL,
+  c_enum_character_set_utf8 ENUM('value1', 'value2') CHARACTER SET utf8 DEFAULT NULL,
+  c_enum_collate_utf8_bin ENUM('value1', 'value2') COLLATE utf8_bin DEFAULT NULL,
+  c_set SET('value1', 'value2') DEFAULT NULL,
+  c_set_character_set_utf8 SET('value1', 'value2') CHARACTER SET utf8 DEFAULT NULL,
+  c_set_collate_utf8_bin SET('value1', 'value2') COLLATE utf8_bin DEFAULT NULL,
+  c_json JSON
+) APPEND_ONLY = TRUE;
+
+# insert data under fast path
+statement ok
+INSERT INTO t_insert_all_data_types_ao (id) VALUES (1);
+
+query T nosort
+SELECT c_bit FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_bit_64 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_bool FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_boolean FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_1 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_smallint FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_smallint_1 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_smallint_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_smallint_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint_1 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_int FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_int_1 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_int_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_int_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_integer FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_integer_1 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_integer_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_integer_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_bigint FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_bigint_1 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_bigint_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_bigint_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_decimal FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_decimal_5 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_decimal_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_decimal_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_decimal_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_dec FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_dec_5 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_dec_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_dec_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_dec_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_numeric FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_numeric_5 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_numeric_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_numeric_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_numeric_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_fixed FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_fixed_5 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_fixed_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_fixed_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_fixed_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_float FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_float_5 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_float_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_float_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_float_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_real FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_real_5_2 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_real_unsigned FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query R nosort
+SELECT c_real_zerofill FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_date FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_datetime FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_datetime_6 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_timestamp FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_timestamp_6 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_time FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query D nosort
+SELECT c_time_6 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_year FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_year_4 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_char FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_national_char FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_char_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_char_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_char_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_national_varchar_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_varchar_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_varchar_8_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_varchar_8_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_binary FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_binary_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_varbinary_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_tinyblob FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_blob FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_blob_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_mediumblob FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query B nosort
+SELECT c_longblob FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_tinytext FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_tinytext_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_tinytext_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_text FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_text_8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_text_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_text_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_mediumtext FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_mediumtext_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_mediumtext_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_longtext FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_longtext_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_longtext_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_enum FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_enum_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_enum_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_set FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_set_character_set_utf8 FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query T nosort
+SELECT c_set_collate_utf8_bin FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query J nosort
+SELECT c_json FROM t_insert_all_data_types_ao;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_1 FROM t_insert_all_data_types_ao WHERE c_tinyint_1 is NULL;
+----
+NULL
+
+# Test on non-append-only table
+
+statement ok
+DROP TABLE IF EXISTS t_insert_all_data_types;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_insert_all_data_types (
+  id BIGINT,
+  c_bit BIT DEFAULT NULL,
+  c_bit_64 BIT(64) DEFAULT NULL,
+  c_bool BOOL DEFAULT NULL,
+  c_boolean BOOLEAN DEFAULT NULL,
+  c_tinyint TINYINT DEFAULT NULL,
+  c_tinyint_1 TINYINT(1) DEFAULT NULL,
+  c_tinyint_unsigned TINYINT UNSIGNED DEFAULT NULL,
+  c_tinyint_zerofill TINYINT ZEROFILL DEFAULT NULL,
+  c_smallint SMALLINT DEFAULT NULL,
+  c_smallint_1 SMALLINT(1) DEFAULT NULL,
+  c_smallint_unsigned SMALLINT UNSIGNED DEFAULT NULL,
+  c_smallint_zerofill SMALLINT ZEROFILL DEFAULT NULL,
+  c_mediumint MEDIUMINT DEFAULT NULL,
+  c_mediumint_1 MEDIUMINT(1) DEFAULT NULL,
+  c_mediumint_unsigned MEDIUMINT UNSIGNED DEFAULT NULL,
+  c_mediumint_zerofill MEDIUMINT ZEROFILL DEFAULT NULL,
+  c_int INT DEFAULT NULL,
+  c_int_1 INT(1) DEFAULT NULL,
+  c_int_unsigned INT UNSIGNED DEFAULT NULL,
+  c_int_zerofill INT ZEROFILL DEFAULT NULL,
+  c_integer INTEGER DEFAULT NULL,
+  c_integer_1 INTEGER(1) DEFAULT NULL,
+  c_integer_unsigned INTEGER UNSIGNED DEFAULT NULL,
+  c_integer_zerofill INTEGER ZEROFILL DEFAULT NULL,
+  c_bigint BIGINT DEFAULT NULL,
+  c_bigint_1 BIGINT(1) DEFAULT NULL,
+  c_bigint_unsigned BIGINT UNSIGNED DEFAULT NULL,
+  c_bigint_zerofill BIGINT ZEROFILL DEFAULT NULL,
+  c_decimal DECIMAL DEFAULT NULL,
+  c_decimal_5 DECIMAL(5) DEFAULT NULL,
+  c_decimal_5_2 DECIMAL(5, 2) DEFAULT NULL,
+  c_decimal_unsigned DECIMAL UNSIGNED DEFAULT NULL,
+  c_decimal_zerofill DECIMAL ZEROFILL DEFAULT NULL,
+  c_dec DEC DEFAULT NULL,
+  c_dec_5 DEC(5) DEFAULT NULL,
+  c_dec_5_2 DEC(5, 2) DEFAULT NULL,
+  c_dec_unsigned DEC UNSIGNED DEFAULT NULL,
+  c_dec_zerofill DEC ZEROFILL DEFAULT NULL,
+  c_numeric NUMERIC DEFAULT NULL,
+  c_numeric_5 NUMERIC(5) DEFAULT NULL,
+  c_numeric_5_2 NUMERIC(5, 2) DEFAULT NULL,
+  c_numeric_unsigned NUMERIC UNSIGNED DEFAULT NULL,
+  c_numeric_zerofill NUMERIC ZEROFILL DEFAULT NULL,
+  c_fixed FIXED DEFAULT NULL,
+  c_fixed_5 FIXED(5) DEFAULT NULL,
+  c_fixed_5_2 FIXED(5, 2) DEFAULT NULL,
+  c_fixed_unsigned FIXED UNSIGNED DEFAULT NULL,
+  c_fixed_zerofill FIXED ZEROFILL DEFAULT NULL,
+  c_float FLOAT DEFAULT NULL,
+  c_float_5 FLOAT(5) DEFAULT NULL,
+  c_float_5_2 FLOAT(5, 2) DEFAULT NULL,
+  c_float_unsigned FLOAT UNSIGNED DEFAULT NULL,
+  c_float_zerofill FLOAT ZEROFILL DEFAULT NULL,
+  c_double DOUBLE DEFAULT NULL,
+  c_double_5_2 DOUBLE(5, 2) DEFAULT NULL,
+  c_double_unsigned DOUBLE UNSIGNED DEFAULT NULL,
+  c_double_zerofill DOUBLE ZEROFILL DEFAULT NULL,
+  c_double_precision DOUBLE PRECISION DEFAULT NULL,
+  c_double_precision_5_2 DOUBLE PRECISION(5, 2) DEFAULT NULL,
+  c_double_precision_unsigned DOUBLE PRECISION UNSIGNED DEFAULT NULL,
+  c_double_precision_zerofill DOUBLE PRECISION ZEROFILL DEFAULT NULL,
+  c_real REAL DEFAULT NULL,
+  c_real_5_2 REAL(5, 2) DEFAULT NULL,
+  c_real_unsigned REAL UNSIGNED DEFAULT NULL,
+  c_real_zerofill REAL ZEROFILL DEFAULT NULL,
+  c_date DATE DEFAULT NULL,
+  c_datetime DATETIME DEFAULT NULL,
+  c_datetime_6 DATETIME(6) DEFAULT NULL,
+  c_timestamp TIMESTAMP DEFAULT NULL,
+  c_timestamp_6 TIMESTAMP(6) DEFAULT NULL,
+  c_time TIME DEFAULT NULL,
+  c_time_6 TIME(6) DEFAULT NULL,
+  c_year YEAR DEFAULT NULL,
+  c_year_4 YEAR(4) DEFAULT NULL,
+  c_char CHAR DEFAULT NULL,
+  c_national_char NATIONAL CHAR DEFAULT NULL,
+  c_char_8 CHAR(8) DEFAULT NULL,
+  c_char_character_set_utf8 CHAR CHARACTER SET utf8 DEFAULT NULL,
+  c_char_collate_utf8_bin CHAR COLLATE utf8_bin DEFAULT NULL,
+  c_national_varchar_8 NATIONAL VARCHAR(8) DEFAULT NULL,
+  c_varchar_8 VARCHAR(8) DEFAULT NULL,
+  c_varchar_8_character_set_utf8 VARCHAR(8) CHARACTER SET utf8 DEFAULT NULL,
+  c_varchar_8_collate_utf8_bin VARCHAR(8) COLLATE utf8_bin DEFAULT NULL,
+  c_binary BINARY DEFAULT NULL,
+  c_binary_8 BINARY(8) DEFAULT NULL,
+  c_varbinary_8 VARBINARY(8) DEFAULT NULL,
+  c_tinyblob TINYBLOB DEFAULT NULL,
+  c_blob BLOB DEFAULT NULL,
+  c_blob_8 BLOB(8) DEFAULT NULL,
+  c_mediumblob MEDIUMBLOB DEFAULT NULL,
+  c_longblob LONGBLOB DEFAULT NULL,
+  c_tinytext TINYTEXT DEFAULT NULL,
+  c_tinytext_character_set_utf8 TINYTEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_tinytext_collate_utf8_bin TINYTEXT COLLATE utf8_bin DEFAULT NULL,
+  c_text TEXT DEFAULT NULL,
+  c_text_8 TEXT(8) DEFAULT NULL,
+  c_text_character_set_utf8 TEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_text_collate_utf8_bin TEXT COLLATE utf8_bin DEFAULT NULL,
+  c_mediumtext MEDIUMTEXT DEFAULT NULL,
+  c_mediumtext_character_set_utf8 MEDIUMTEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_mediumtext_collate_utf8_bin MEDIUMTEXT COLLATE utf8_bin DEFAULT NULL,
+  c_longtext LONGTEXT DEFAULT NULL,
+  c_longtext_character_set_utf8 LONGTEXT CHARACTER SET utf8 DEFAULT NULL,
+  c_longtext_collate_utf8_bin LONGTEXT COLLATE utf8_bin DEFAULT NULL,
+  c_enum ENUM('value1', 'value2') DEFAULT NULL,
+  c_enum_character_set_utf8 ENUM('value1', 'value2') CHARACTER SET utf8 DEFAULT NULL,
+  c_enum_collate_utf8_bin ENUM('value1', 'value2') COLLATE utf8_bin DEFAULT NULL,
+  c_set SET('value1', 'value2') DEFAULT NULL,
+  c_set_character_set_utf8 SET('value1', 'value2') CHARACTER SET utf8 DEFAULT NULL,
+  c_set_collate_utf8_bin SET('value1', 'value2') COLLATE utf8_bin DEFAULT NULL,
+  c_json JSON
+);
+
+# insert data without fast path
+statement ok
+INSERT INTO t_insert_all_data_types (id) VALUES (1);
+
+query T nosort
+SELECT c_bit FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_bit_64 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_bool FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_boolean FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_1 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_smallint FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_smallint_1 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_smallint_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_smallint_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint_1 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_mediumint_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_int FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_int_1 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_int_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_int_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_integer FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_integer_1 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_integer_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_integer_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_bigint FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_bigint_1 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_bigint_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_bigint_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_decimal FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_decimal_5 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_decimal_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_decimal_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_decimal_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_dec FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_dec_5 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_dec_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_dec_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_dec_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_numeric FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_numeric_5 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_numeric_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_numeric_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_numeric_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_fixed FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_fixed_5 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_fixed_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_fixed_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+skipif mysql
+query R nosort
+SELECT c_fixed_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_float FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_float_5 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_float_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_float_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_float_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_double_precision_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_real FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_real_5_2 FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_real_unsigned FROM t_insert_all_data_types;
+----
+NULL
+
+query R nosort
+SELECT c_real_zerofill FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_date FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_datetime FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_datetime_6 FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_timestamp FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_timestamp_6 FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_time FROM t_insert_all_data_types;
+----
+NULL
+
+query D nosort
+SELECT c_time_6 FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_year FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_year_4 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_char FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_national_char FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_char_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_char_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_char_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_national_varchar_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_varchar_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_varchar_8_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_varchar_8_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_binary FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_binary_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_varbinary_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_tinyblob FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_blob FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_blob_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_mediumblob FROM t_insert_all_data_types;
+----
+NULL
+
+query B nosort
+SELECT c_longblob FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_tinytext FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_tinytext_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_tinytext_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_text FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_text_8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_text_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_text_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_mediumtext FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_mediumtext_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_mediumtext_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_longtext FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_longtext_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_longtext_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_enum FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_enum_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_enum_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_set FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_set_character_set_utf8 FROM t_insert_all_data_types;
+----
+NULL
+
+query T nosort
+SELECT c_set_collate_utf8_bin FROM t_insert_all_data_types;
+----
+NULL
+
+query J nosort
+SELECT c_json FROM t_insert_all_data_types;
+----
+NULL
+
+query I nosort
+SELECT c_tinyint_1 FROM t_insert_all_data_types WHERE c_tinyint_1 is NULL;
+----
+NULL
+
+# Testing APPEND ONLY table
+statement ok
+CREATE TABLE IF NOT EXISTS t_default_null_ao (seq BIGINT PRIMARY KEY, id BIGINT, name VARCHAR(255) default null, price FLOAT default null, create_time TIMESTAMP default null, i int default null, ii int) APPEND_ONLY = TRUE;
+
+statement ok
+TRUNCATE t_default_null_ao;
+
+statement ok
+INSERT INTO t_default_null_ao (seq, id, name, price, create_time)
+VALUES
+(1, NULL, 'AAA', 0.01, '2023-02-02 22:22:22'),
+(2, 123, NULL, 0.01, '2023-02-02 22:22:22'),
+(3, 234, 'BBB', NULL, '2023-02-02 22:22:22'),
+(4, 345, 'CCC', 0.01, NULL),
+(5, 111, 'John', 0.01, '2023-02-02 22:22:22'),
+(6, 222, 'Sam', 0.02, '2023-03-03 23:23:23');
+
+statement ok
+INSERT INTO t_default_null_ao (seq, id) VALUES (7, 999);
+
+statement ok
+INSERT INTO t_default_null_ao (seq, name) VALUES (8, 'abc');
+
+statement ok
+INSERT INTO t_default_null_ao (seq, price) VALUES (9, 0.09);
+
+statement ok
+INSERT INTO t_default_null_ao (seq, create_time) VALUES (10, '2023-03-03 23:23:23');
+
+query IITRDII nosort
+SELECT * FROM t_default_null_ao ORDER BY seq;
+----
+1	NULL	AAA	0.01	2023-02-02 22:22:22	NULL	NULL
+2	123	NULL	0.01	2023-02-02 22:22:22	NULL	NULL
+3	234	BBB	NULL	2023-02-02 22:22:22	NULL	NULL
+4	345	CCC	0.01	NULL	NULL	NULL
+5	111	John	0.01	2023-02-02 22:22:22	NULL	NULL
+6	222	Sam	0.02	2023-03-03 23:23:23	NULL	NULL
+7	999	NULL	NULL	NULL	NULL	NULL
+8	NULL	abc	NULL	NULL	NULL	NULL
+9	NULL	NULL	0.09	NULL	NULL	NULL
+10	NULL	NULL	NULL	2023-03-03 23:23:23	NULL	NULL
+
+# Testing non APPEND ONLY table
+statement ok
+DROP TABLE IF EXISTS t_default_null;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_default_null (seq BIGINT PRIMARY KEY, id BIGINT, name VARCHAR(255) default null, price FLOAT default null, create_time TIMESTAMP default null, i int default null, ii int);
+
+statement ok
+TRUNCATE t_default_null;
+
+statement ok
+INSERT INTO t_default_null (seq, id, name, price, create_time)
+VALUES
+(1, NULL, 'AAA', 0.01, '2023-02-02 22:22:22'),
+(2, 123, NULL, 0.01, '2023-02-02 22:22:22'),
+(3, 234, 'BBB', NULL, '2023-02-02 22:22:22'),
+(4, 345, 'CCC', 0.01, NULL),
+(5, 111, 'John', 0.01, '2023-02-02 22:22:22'),
+(6, 222, 'Sam', 0.02, '2023-03-03 23:23:23');
+
+statement ok
+INSERT INTO t_default_null (seq, id) VALUES (7, 999);
+
+statement ok
+INSERT INTO t_default_null (seq, name) VALUES (8, 'abc');
+
+statement ok
+INSERT INTO t_default_null (seq, price) VALUES (9, 0.09);
+
+statement ok
+INSERT INTO t_default_null (seq, create_time) VALUES (10, '2023-03-03 23:23:23');
+
+query IITRDII nosort
+SELECT * FROM t_default_null ORDER BY seq;
+----
+1	NULL	AAA	0.01	2023-02-02 22:22:22	NULL	NULL
+2	123	NULL	0.01	2023-02-02 22:22:22	NULL	NULL
+3	234	BBB	NULL	2023-02-02 22:22:22	NULL	NULL
+4	345	CCC	0.01	NULL	NULL	NULL
+5	111	John	0.01	2023-02-02 22:22:22	NULL	NULL
+6	222	Sam	0.02	2023-03-03 23:23:23	NULL	NULL
+7	999	NULL	NULL	NULL	NULL	NULL
+8	NULL	abc	NULL	NULL	NULL	NULL
+9	NULL	NULL	0.09	NULL	NULL	NULL
+10	NULL	NULL	NULL	2023-03-03 23:23:23	NULL	NULL
+
+statement ok
+DROP DATABASE IF EXISTS test_insert_default_null;

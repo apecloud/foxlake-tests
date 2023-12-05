@@ -1,0 +1,243 @@
+statement ok
+DROP DATABASE IF EXISTS basic_dml;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS basic_dml;
+
+statement ok
+USE basic_dml;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id INT, msg VARCHAR(100));
+
+query II nosort
+select * from (select 1 as id) t inner join (select 0 as zero) as s on t.id = 1;
+----
+1	0
+
+statement ok
+INSERT INTO t(id, msg)
+VALUES (1, 'hello');
+
+query IT nosort
+SELECT * FROM t;
+----
+1	hello
+
+query IT rowsort
+SELECT * FROM VALUES ROW(1, 'hello') as s(id, msg);
+----
+1	hello
+
+query IT rowsort
+SELECT * FROM (VALUES ROW(1, 'hello'), (2, 'world')) as s(id, msg);
+----
+1	hello
+2	world
+
+query IT rowsort
+SELECT * FROM (VALUES ROW(1, 'hello'), (2, 'world'), (3, 'foxlake')) as s(id, msg);
+----
+1	hello
+2	world
+3	foxlake
+
+statement ok
+INSERT INTO t(msg, id)
+VALUES ('world', 2);
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	hello
+2	world
+
+statement ok
+UPDATE t
+SET t.msg = "ApeCloud"
+WHERE t.id = 2;
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	hello
+2	ApeCloud
+
+statement ok
+INSERT INTO t(msg, id)
+VALUES ('FoxLake', 3), ('KubeBlocks', 4);
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	hello
+2	ApeCloud
+3	FoxLake
+4	KubeBlocks
+
+statement ok
+UPDATE t
+SET t.msg = "testOr"
+WHERE t.id < 2 or t.id > 3;
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	testOr
+2	ApeCloud
+3	FoxLake
+4	testOr
+
+statement ok
+UPDATE t
+SET t.msg = "testAnd"
+WHERE t.id > 1 and t.id < 4;
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	testOr
+2	testAnd
+3	testAnd
+4	testOr
+
+statement ok
+delete
+from t
+where t.id > 2;
+
+query IT rowsort
+SELECT * FROM t;
+----
+1	testOr
+2	testAnd
+
+statement ok
+ALTER TABLE t drop column msg;
+
+query I rowsort
+SELECT * FROM t;
+----
+1
+2
+
+statement ok
+ALTER TABLE t ADD COLUMN msg VARCHAR(100), ADD COLUMN num INT AFTER id;
+
+query IIT rowsort
+SELECT * FROM t;
+----
+1	NULL	NULL
+2	NULL	NULL
+
+statement ok
+INSERT INTO t(id, msg, num)
+VALUES (3, "foo", 59);
+
+query IIT rowsort
+SELECT * FROM t;
+----
+1	NULL	NULL
+2	NULL	NULL
+3	59	foo
+
+statement ok
+DELETE FROM t WHERE t.id < 3;
+
+query IIT nosort
+SELECT * FROM t;
+----
+3	59	foo
+
+statement ok
+DELETE FROM t WHERE 1 > 2;
+
+query IIT nosort
+SELECT * FROM t;
+----
+3	59	foo
+
+statement ok
+DELETE FROM t;
+
+query I nosort
+SELECT COUNT(*) FROM t;
+----
+0
+
+statement ok
+DROP TABLE IF EXISTS Test;
+
+statement ok
+CREATE TABLE IF NOT EXISTS Test (id INT, msg VARCHAR(60));
+
+statement ok
+INSERT INTO Test(msg, id)
+VALUES ('ApeCloud', 666);
+
+query IT rowsort
+SELECT * FROM Test;
+----
+666	ApeCloud
+
+statement ok
+INSERT INTO Test(msg, id)
+VALUES ('test null', null), (null, null);
+
+statement ok
+INSERT INTO Test(id)
+VALUES (null), (1);
+
+query IT rowsort
+SELECT * FROM Test;
+----
+1	NULL
+666	ApeCloud
+NULL	NULL
+NULL	NULL
+NULL	test null
+
+statement ok
+CREATE TABLE IF NOT EXISTS insert_small_tiny_medium_int (
+  a int NOT NULL,
+  b smallint NOT NULL,
+  c tinyint NOT NULL,
+  d mediumint NOT NULL,
+  PRIMARY KEY (a)
+);
+
+statement ok
+INSERT INTO insert_small_tiny_medium_int
+  VALUES (1, 2, 3, 4);
+
+query IIII nosort
+SELECT
+  *
+FROM
+  insert_small_tiny_medium_int;
+----
+1	2	3	4
+
+statement ok
+CREATE TABLE IF NOT EXISTS t_append_only (id BIGINT PRIMARY KEY, i INT) APPEND_ONLY = TRUE;
+
+statement ok
+INSERT INTO t_append_only VALUES (1, 1), (2, 2), (3, 3);
+
+statement error
+UPDATE t_append_only SET i = 2 WHERE id = 1;
+
+statement ok
+DELETE FROM t_append_only WHERE id = 3;
+
+query II nosort
+SELECT * FROM t_append_only;
+----
+1	1
+2	2
+
+statement ok
+DROP DATABASE IF EXISTS basic_dml;

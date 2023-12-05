@@ -1,0 +1,45 @@
+statement ok
+USE foxlake;
+
+statement ok
+DROP DATABASE IF EXISTS test_data_type_compare;
+
+statement ok
+CREATE DATABASE test_data_type_compare;
+
+statement ok
+USE test_data_type_compare;
+
+statement ok
+/*+ ENGINE = columnar@default */ CREATE TABLE IF NOT EXISTS t (a BIGINT(20));
+
+statement ok
+INSERT INTO t VALUES(102935229216544093);
+
+query I nosort
+select count(*) from t where a = '102935229216544093';
+----
+1
+
+query I nosort
+select count(*) from t where a = '102935229216544094';
+----
+0
+
+query I nosort
+select count(*) from t where a = 102935229216544094;
+----
+0
+
+query I nosort
+select count(*) from t where a + 0 = '102935229216544094';
+----
+0
+
+query I nosort
+select count(*) from t where a + 1 = '102935229216544094';
+----
+1
+
+statement ok
+DROP DATABASE IF EXISTS test_data_type_compare;

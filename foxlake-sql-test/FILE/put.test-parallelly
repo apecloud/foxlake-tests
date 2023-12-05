@@ -1,0 +1,7 @@
+statement ok
+put 'tests/cicd/put-file/test.file';
+
+query TT nosort
+LIST STORAGE 'default:test' where filename='test.file';
+----
+test.file	FILE

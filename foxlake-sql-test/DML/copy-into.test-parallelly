@@ -1,0 +1,124 @@
+# Please put the directory 'cicd' to your bucket.
+# This directory can be found under the tests direcotory.
+#
+# Content of t1.csv:
+# 1|abc|2
+#
+# Content of t2.csv:
+# 1|abc|2
+# 2|def|2
+#
+# Content of t3.csv:
+# 1|abc|2
+# 2|def|2
+# 3|opq|2
+
+statement ok
+DROP DATABASE IF EXISTS copy_into;
+
+statement ok
+CREATE DATABASE IF NOT EXISTS copy_into;
+
+statement ok
+USE copy_into;
+
+statement ok
+DROP TABLE IF EXISTS copy_into.t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS copy_into.t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+
+statement ok
+DROP DATABASE IF EXISTS test_ddls_copy_into;
+
+statement ok
+CREATE DATABASE test_ddls_copy_into;
+
+statement ok
+USE test_ddls_copy_into;
+
+statement ok
+DROP TABLE IF EXISTS t;
+
+statement ok
+CREATE TABLE IF NOT EXISTS t (id BIGINT PRIMARY KEY, s VARCHAR(100), i INT);
+
+
+# copy data from a file
+statement ok
+COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/t1.csv'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+query ITI rowsort
+SELECT * FROM t;
+----
+1	abc	2
+
+# copy data from specific files
+statement ok
+COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILES = ('t1.csv', 't2.csv')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+query ITI rowsort
+SELECT * FROM t;
+----
+1	abc	2
+1	abc	2
+1	abc	2
+2	def	2
+
+# copy data from directory
+statement ok
+COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+query ITI rowsort
+SELECT * FROM t;
+----
+1	abc	2
+1	abc	2
+1	abc	2
+1	abc	2
+1	abc	2
+1	abc	2
+2	def	2
+2	def	2
+2	def	2
+3	opq	2
+
+# explain copy into
+statement ok
+EXPLAIN COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/{{.STORAGE_PATH}}'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+statement ok
+EXPLAIN COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILES = ('t1.csv', 't2.csv')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+statement ok
+EXPLAIN COPY INTO t
+FROM URI '{{.STORAGE_PROVIDER}}://{{.BUCKET}}/cicd/data-loading/csv/'
+ENDPOINT = '{{.ENDPOINT}}'
+CREDENTIALS = (ACCESS_KEY_ID='{{.ACCESS_KEY_ID}}', SECRET_ACCESS_KEY='{{.SECRET_ACCESS_KEY}}')
+FILE_FORMAT = (TYPE='csv', FIELD_DELIMITER='|', OPTIONALLY_ENCLOSED='"');
+
+statement ok
+DROP DATABASE IF EXISTS copy_into;
