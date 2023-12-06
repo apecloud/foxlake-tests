@@ -1,0 +1,44 @@
+statement ok
+DROP DATABASE IF EXISTS test_builtin_func;
+
+statement ok
+CREATE DATABASE test_builtin_func;
+
+statement ok
+USE test_builtin_func;
+
+# Test on append-only table
+
+statement ok
+CREATE TABLE t_time_func_ao (id BIGINT PRIMARY KEY, expected VARCHAR(100), ts_0 TIMESTAMP, ts_1 TIMESTAMP, ts_2 TIMESTAMP, ts_3 TIMESTAMP) APPEND_ONLY = TRUE;
+
+statement ok
+INSERT INTO t_time_func_ao (id, expected, ts_0, ts_1, ts_2, ts_3) VALUES (1, LOCALTIME(6), CURRENT_TIMESTAMP(), NOW(), SYSDATE(), LOCALTIMESTAMP());
+
+# Checking the result in all temporal columns with the one in the column 'expected'
+query IIIII nosort
+SELECT id,
+    /* Comparing expected with ts_x */
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(ts_0 AS CHAR)) AS ts_0_eq,
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(ts_1 AS CHAR)) AS ts_1_eq,
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(ts_2 AS CHAR)) AS ts_2_eq,
+    (DATE_FORMAT(CAST(expected AS DATETIME), '%Y-%m-%d %H:%i:%s') = CAST(ts_3 AS CHAR)) AS ts_3_eq
+FROM t_time_func_ao ORDER BY id;
+----
+1	1	1	1	1
+
+query IIITTT nosort
+SELECT
+    YEAR('2023-12-05'),
+    MONTH('2023-12-05'),
+    DAY('2023-12-05'),
+    DATE_FORMAT('2023-12-05', '%W, %M %d, %Y'),
+    DATE_ADD(DATE_ADD(DATE_ADD('2023-01-01 12:00:00', INTERVAL 1 MONTH), INTERVAL -15 DAY), INTERVAL '2:30' HOUR_MINUTE),
+    SUBSTRING('Hello World', -5, 3);
+----
+2023	12	5	Tuesday, December 05, 2023	2023-01-17 14:30:00	Wor
+
+statement ok
+DROP DATABASE IF EXISTS test_builtin_func;
+
+
